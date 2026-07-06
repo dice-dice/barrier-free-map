@@ -1,21 +1,21 @@
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinkButton } from '../components/LinkButton';
-import { LoginForm } from '../components/LoginForm';
+import { SignupForm } from '../components/SignupForm';
 
-interface LoginScreenProps {
-  onNavigateToSignup: () => void;
+interface SignupScreenProps {
+  onNavigateToLogin: () => void;
 }
 
-export function LoginScreen({ onNavigateToSignup }: LoginScreenProps) {
+export function SignupScreen({ onNavigateToLogin }: SignupScreenProps) {
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text style={styles.title}>ログイン</Text>
-          <Text style={styles.subtitle}>登録済みのメールアドレスでログインしてください</Text>
+          <Text style={styles.title}>アカウント作成</Text>
+          <Text style={styles.subtitle}>メールアドレスとパスワードを入力してください</Text>
         </View>
-        <LoginForm />
-        <LinkButton label="アカウントをお持ちでない方はこちら" onPress={onNavigateToSignup} />
+        <SignupForm />
+        <LinkButton label="すでにアカウントをお持ちの方はこちら" onPress={onNavigateToLogin} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

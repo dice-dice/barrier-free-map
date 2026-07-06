@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useSession } from './hooks/useSession';
-import { LoginScreen } from './screens/LoginScreen';
+import { AuthScreen } from './screens/AuthScreen';
 import { MainScreen } from './screens/MainScreen';
 
 export default function App() {
@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <>
-      {session ? <MainScreen /> : <LoginScreen />}
+      {session ? <MainScreen session={session} /> : <AuthScreen />}
       <StatusBar style="auto" />
     </>
   );
