@@ -12,7 +12,7 @@ export function useFacilities() {
 
     supabase
       .from('spots')
-      .select('id, name, address, category, accessibility_features')
+      .select('id, name, address, category, accessibility_features, photo_urls')
       .order('name', { ascending: true })
       .then(({ data, error }) => {
         if (!isMounted) {

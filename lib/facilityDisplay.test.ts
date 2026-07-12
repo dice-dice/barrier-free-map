@@ -7,6 +7,7 @@ describe('toFacilityListItem', () => {
     address: '東京都千代田区1-1-1',
     category: 'other' as const,
     accessibility_features: [] as string[],
+    photo_urls: [] as string[],
   };
 
   it('passes through id, name, and address', () => {
@@ -14,6 +15,19 @@ describe('toFacilityListItem', () => {
     expect(result.id).toBe('1');
     expect(result.name).toBe('テスト施設');
     expect(result.address).toBe('東京都千代田区1-1-1');
+  });
+
+  it('passes through photo_urls as photoUrls', () => {
+    const result = toFacilityListItem({
+      ...baseSpot,
+      photo_urls: ['https://example.com/a.jpg', 'https://example.com/b.jpg'],
+    });
+    expect(result.photoUrls).toEqual(['https://example.com/a.jpg', 'https://example.com/b.jpg']);
+  });
+
+  it('returns an empty array when there are no photos', () => {
+    const result = toFacilityListItem(baseSpot);
+    expect(result.photoUrls).toEqual([]);
   });
 
   it('marks wheelchair accessible when the tag is present', () => {

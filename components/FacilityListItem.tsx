@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
+import { FacilityPhotoGallery } from './FacilityPhotoGallery';
 
 interface FacilityListItemProps {
   facility: FacilityListItemData;
@@ -8,6 +9,7 @@ interface FacilityListItemProps {
 export function FacilityListItem({ facility }: FacilityListItemProps) {
   return (
     <View style={styles.card}>
+      <FacilityPhotoGallery photoUrls={facility.photoUrls} />
       <Text style={styles.name}>{facility.name}</Text>
       {facility.address ? <Text style={styles.address}>{facility.address}</Text> : null}
       <View style={styles.badgeRow}>

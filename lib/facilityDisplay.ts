@@ -3,13 +3,14 @@ import type { Database } from './database.types';
 type SpotRow = Database['public']['Tables']['spots']['Row'];
 type FacilitySourceSpot = Pick<
   SpotRow,
-  'id' | 'name' | 'address' | 'category' | 'accessibility_features'
+  'id' | 'name' | 'address' | 'category' | 'accessibility_features' | 'photo_urls'
 >;
 
 export interface FacilityListItem {
   id: string;
   name: string;
   address: string | null;
+  photoUrls: string[];
   isWheelchairAccessible: boolean;
   hasAccessibleToilet: boolean;
   hasElevator: boolean;
@@ -24,6 +25,7 @@ export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
     id: spot.id,
     name: spot.name,
     address: spot.address,
+    photoUrls: spot.photo_urls,
     isWheelchairAccessible: spot.accessibility_features.includes(WHEELCHAIR_TAG),
     hasAccessibleToilet:
       spot.category === 'toilet' || spot.accessibility_features.includes(MULTIPURPOSE_TOILET_TAG),
