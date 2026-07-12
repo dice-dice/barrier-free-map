@@ -1,10 +1,13 @@
-import type { Database } from './database.types';
+import type { SpotCategory } from './database.types';
 
-type SpotRow = Database['public']['Tables']['spots']['Row'];
-type FacilitySourceSpot = Pick<
-  SpotRow,
-  'id' | 'name' | 'address' | 'category' | 'accessibility_features' | 'photo_urls'
->;
+export interface FacilitySourceSpot {
+  id: string;
+  name: string;
+  address: string | null;
+  category: SpotCategory;
+  accessibility_features: string[];
+  photo_urls: string[];
+}
 
 export interface FacilityListItem {
   id: string;

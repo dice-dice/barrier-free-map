@@ -1,8 +1,12 @@
 import type { Session } from '@supabase/supabase-js';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { FacilityList } from '../components/FacilityList';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useSignOut } from '../hooks/useSignOut';
+import { NearbyMapScreen } from './NearbyMapScreen';
+
+type ViewMode = 'list' | 'map';
 
 interface MainScreenProps {
   session: Session;
@@ -10,6 +14,7 @@ interface MainScreenProps {
 
 export function MainScreen({ session }: MainScreenProps) {
   const { signOut, loading, errorMessage } = useSignOut();
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   return (
     <View style={styles.container}>
@@ -18,9 +23,27 @@ export function MainScreen({ session }: MainScreenProps) {
         <Text style={styles.email}>{session.user.email}</Text>
         {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
         <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
+        <View style={styles.tabRow}>
+          <ViewModeTab label="一覧" active={viewMode === 'list'} onPress={() => setViewMode('list')} />
+          <ViewModeTab label="地図" active={viewMode === 'map'} onPress={() => setViewMode('map')} />
+        </View>
       </View>
-      <FacilityList />
+      {viewMode === 'list' ? <FacilityList /> : <NearbyMapScreen />}
     </View>
+  );
+}
+
+interface ViewModeTabProps {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+function ViewModeTab({ label, active, onPress }: ViewModeTabProps) {
+  return (
+    <Pressable style={[styles.tab, active ? styles.tabActive : null]} onPress={onPress}>
+      <Text style={[styles.tabText, active ? styles.tabTextActive : null]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -49,5 +72,28 @@ const styles = StyleSheet.create({
     color: '#d92d20',
     fontSize: 14,
     marginBottom: 12,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+  },
+  tabActive: {
+    backgroundColor: '#2563eb',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#5a5a5a',
+  },
+  tabTextActive: {
+    color: '#fff',
   },
 });
