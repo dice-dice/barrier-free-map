@@ -28,6 +28,7 @@ export interface Database {
           avatar_url?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       spots: {
         Row: {
@@ -66,6 +67,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       reviews: {
         Row: {
@@ -95,6 +97,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: {
@@ -115,6 +118,7 @@ export interface Database {
           average_rating: number;
           review_count: number;
         };
+        Relationships: [];
       };
     };
     Functions: {
@@ -144,5 +148,7 @@ export interface Database {
         }[];
       };
     };
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
