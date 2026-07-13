@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { FacilityList } from '../components/FacilityList';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useSignOut } from '../hooks/useSignOut';
+import { CreateFacilityScreen } from './CreateFacilityScreen';
 import { NearbyMapScreen } from './NearbyMapScreen';
 
 type ViewMode = 'list' | 'map';
@@ -15,6 +16,11 @@ interface MainScreenProps {
 export function MainScreen({ session }: MainScreenProps) {
   const { signOut, loading, errorMessage } = useSignOut();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [isCreating, setIsCreating] = useState(false);
+
+  if (isCreating) {
+    return <CreateFacilityScreen createdBy={session.user.id} onDone={() => setIsCreating(false)} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -22,7 +28,10 @@ export function MainScreen({ session }: MainScreenProps) {
         <Text style={styles.title}>施設一覧</Text>
         <Text style={styles.email}>{session.user.email}</Text>
         {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-        <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
+        <View style={styles.actionRow}>
+          <PrimaryButton label="施設を登録" onPress={() => setIsCreating(true)} />
+          <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
+        </View>
         <View style={styles.tabRow}>
           <ViewModeTab label="一覧" active={viewMode === 'list'} onPress={() => setViewMode('list')} />
           <ViewModeTab label="地図" active={viewMode === 'map'} onPress={() => setViewMode('map')} />
@@ -72,6 +81,10 @@ const styles = StyleSheet.create({
     color: '#d92d20',
     fontSize: 14,
     marginBottom: 12,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: 8,
   },
   tabRow: {
     flexDirection: 'row',

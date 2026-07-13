@@ -1,4 +1,5 @@
 import type { SpotCategory } from './database.types';
+import { ELEVATOR_TAG, MULTIPURPOSE_TOILET_TAG, WHEELCHAIR_TAG } from './facilityOptions';
 
 export interface FacilitySourceSpot {
   id: string;
@@ -18,10 +19,6 @@ export interface FacilityListItem {
   hasAccessibleToilet: boolean;
   hasElevator: boolean;
 }
-
-const WHEELCHAIR_TAG = 'wheelchair';
-const MULTIPURPOSE_TOILET_TAG = 'multipurpose_toilet';
-const ELEVATOR_TAG = 'elevator';
 
 export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
   return {

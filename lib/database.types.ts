@@ -37,6 +37,7 @@ export interface Database {
           description: string | null;
           category: SpotCategory;
           accessibility_features: string[];
+          location: unknown;
           address: string | null;
           photo_urls: string[];
           created_by: string;
@@ -49,6 +50,7 @@ export interface Database {
           description?: string | null;
           category: SpotCategory;
           accessibility_features?: string[];
+          location: string;
           address?: string | null;
           photo_urls?: string[];
           created_by: string;
@@ -61,6 +63,7 @@ export interface Database {
           description?: string | null;
           category?: SpotCategory;
           accessibility_features?: string[];
+          location?: string;
           address?: string | null;
           photo_urls?: string[];
           created_by?: string;
