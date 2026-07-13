@@ -6,6 +6,8 @@ export type SpotCategory =
   | "entrance"
   | "other";
 
+export type SpotStatus = "pending" | "approved" | "rejected";
+
 export interface Database {
   public: {
     Tables: {
@@ -40,6 +42,7 @@ export interface Database {
           location: unknown;
           address: string | null;
           photo_urls: string[];
+          status: SpotStatus;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -53,6 +56,7 @@ export interface Database {
           location: string;
           address?: string | null;
           photo_urls?: string[];
+          status?: SpotStatus;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -66,6 +70,7 @@ export interface Database {
           location?: string;
           address?: string | null;
           photo_urls?: string[];
+          status?: SpotStatus;
           created_by?: string;
           created_at?: string;
           updated_at?: string;

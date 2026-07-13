@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useCreateFacility } from '../hooks/useCreateFacility';
 import type { SpotCategory } from '../lib/database.types';
@@ -53,7 +53,13 @@ export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
         longitude: coordinates.longitude,
         createdBy,
       },
-      { onSuccess }
+      {
+        onSuccess: () => {
+          Alert.alert('投稿ありがとうございます', '管理者の確認後に一覧・地図へ公開されます。', [
+            { text: 'OK', onPress: onSuccess },
+          ]);
+        },
+      }
     );
   };
 
