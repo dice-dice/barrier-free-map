@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
 import { FacilityPhotoGallery } from './FacilityPhotoGallery';
 
@@ -7,6 +7,11 @@ interface FacilityListItemProps {
 }
 
 export function FacilityListItem({ facility }: FacilityListItemProps) {
+  const openInGoogleMaps = () => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${facility.latitude},${facility.longitude}`;
+    Linking.openURL(url);
+  };
+
   return (
     <View style={styles.card}>
       <FacilityPhotoGallery photoUrls={facility.photoUrls} />
@@ -22,6 +27,9 @@ export function FacilityListItem({ facility }: FacilityListItemProps) {
         <FeatureBadge label="多目的トイレ" active={facility.hasAccessibleToilet} />
         <FeatureBadge label="エレベーター" active={facility.hasElevator} />
       </View>
+      <Pressable onPress={openInGoogleMaps} style={styles.mapLink}>
+        <Text style={styles.mapLinkText}>Googleマップで開く</Text>
+      </Pressable>
     </View>
   );
 }
@@ -98,5 +106,14 @@ const styles = StyleSheet.create({
   },
   badgeTextInactive: {
     color: '#9a9a9a',
+  },
+  mapLink: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
+  },
+  mapLinkText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#2563eb',
   },
 });

@@ -9,6 +9,8 @@ export interface FacilitySourceSpot {
   accessibility_features: string[];
   photo_urls: string[];
   source: SpotSource;
+  latitude: number;
+  longitude: number;
 }
 
 export interface FacilityListItem {
@@ -20,6 +22,8 @@ export interface FacilityListItem {
   hasAccessibleToilet: boolean;
   hasElevator: boolean;
   isUnverifiedImport: boolean;
+  latitude: number;
+  longitude: number;
 }
 
 export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
@@ -28,6 +32,8 @@ export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
     name: spot.name,
     address: spot.address,
     photoUrls: spot.photo_urls,
+    latitude: spot.latitude,
+    longitude: spot.longitude,
     isWheelchairAccessible: spot.accessibility_features.includes(WHEELCHAIR_TAG),
     hasAccessibleToilet:
       spot.category === 'toilet' || spot.accessibility_features.includes(MULTIPURPOSE_TOILET_TAG),

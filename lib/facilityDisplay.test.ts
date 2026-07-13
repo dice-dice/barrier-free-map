@@ -9,6 +9,8 @@ describe('toFacilityListItem', () => {
     accessibility_features: [] as string[],
     photo_urls: [] as string[],
     source: 'user_submitted' as const,
+    latitude: 35.681236,
+    longitude: 139.767052,
   };
 
   it('passes through id, name, and address', () => {

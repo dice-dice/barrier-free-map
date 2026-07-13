@@ -125,6 +125,7 @@ export interface Database {
           longitude: number;
           address: string | null;
           photo_urls: string[];
+          source: SpotSource;
           created_by: string;
           created_at: string;
           updated_at: string;
