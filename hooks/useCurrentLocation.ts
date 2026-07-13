@@ -1,52 +1,37 @@
+import { useQuery } from '@tanstack/react-query';
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
 
 export interface Coordinates {
   latitude: number;
   longitude: number;
 }
 
+async function fetchCurrentLocation(): Promise<Coordinates> {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+
+  if (status !== 'granted') {
+    throw new Error('位置情報の利用が許可されていません');
+  }
+
+  const position = await Location.getCurrentPositionAsync({});
+
+  return {
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
+  };
+}
+
 export function useCurrentLocation() {
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['currentLocation'],
+    queryFn: fetchCurrentLocation,
+    staleTime: Infinity,
+    retry: false,
+  });
 
-  useEffect(() => {
-    let isMounted = true;
-
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== 'granted') {
-        if (isMounted) {
-          setErrorMessage('位置情報の利用が許可されていません');
-          setLoading(false);
-        }
-        return;
-      }
-
-      try {
-        const position = await Location.getCurrentPositionAsync({});
-
-        if (isMounted) {
-          setCoordinates({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setLoading(false);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : '現在地の取得に失敗しました');
-          setLoading(false);
-        }
-      }
-    })();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { coordinates, loading, errorMessage };
+  return {
+    coordinates: data ?? null,
+    loading: isLoading,
+    errorMessage: error instanceof Error ? error.message : null,
+  };
 }

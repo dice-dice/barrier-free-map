@@ -1,37 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { toFacilityListItem, type FacilityListItem } from '../lib/facilityDisplay';
 import { supabase } from '../lib/supabase';
 
+async function fetchFacilities(): Promise<FacilityListItem[]> {
+  const { data, error } = await supabase
+    .from('spots')
+    .select('id, name, address, category, accessibility_features, photo_urls')
+    .order('name', { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data.map(toFacilityListItem);
+}
+
 export function useFacilities() {
-  const [facilities, setFacilities] = useState<FacilityListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['facilities'],
+    queryFn: fetchFacilities,
+  });
 
-  useEffect(() => {
-    let isMounted = true;
-
-    supabase
-      .from('spots')
-      .select('id, name, address, category, accessibility_features, photo_urls')
-      .order('name', { ascending: true })
-      .then(({ data, error }) => {
-        if (!isMounted) {
-          return;
-        }
-
-        if (error) {
-          setErrorMessage(error.message);
-        } else {
-          setFacilities(data.map(toFacilityListItem));
-        }
-
-        setLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { facilities, loading, errorMessage };
+  return {
+    facilities: data ?? [],
+    loading: isLoading,
+    errorMessage: error instanceof Error ? error.message : null,
+  };
 }
