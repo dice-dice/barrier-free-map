@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 async function fetchFacilities(): Promise<FacilityListItem[]> {
   const { data, error } = await supabase
     .from('spots')
-    .select('id, name, address, category, accessibility_features, photo_urls')
+    .select('id, name, address, category, accessibility_features, photo_urls, source')
     .order('name', { ascending: true });
 
   if (error) {

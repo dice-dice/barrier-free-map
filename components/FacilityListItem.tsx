@@ -10,6 +10,11 @@ export function FacilityListItem({ facility }: FacilityListItemProps) {
   return (
     <View style={styles.card}>
       <FacilityPhotoGallery photoUrls={facility.photoUrls} />
+      {facility.isUnverifiedImport ? (
+        <View style={styles.unverifiedBadge}>
+          <Text style={styles.unverifiedBadgeText}>OpenStreetMap由来・未確認</Text>
+        </View>
+      ) : null}
       <Text style={styles.name}>{facility.name}</Text>
       {facility.address ? <Text style={styles.address}>{facility.address}</Text> : null}
       <View style={styles.badgeRow}>
@@ -43,6 +48,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+  },
+  unverifiedBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#fdf0d5',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginBottom: 8,
+  },
+  unverifiedBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#a15c07',
   },
   name: {
     fontSize: 16,

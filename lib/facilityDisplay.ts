@@ -1,4 +1,4 @@
-import type { SpotCategory } from './database.types';
+import type { SpotCategory, SpotSource } from './database.types';
 import { ELEVATOR_TAG, MULTIPURPOSE_TOILET_TAG, WHEELCHAIR_TAG } from './facilityOptions';
 
 export interface FacilitySourceSpot {
@@ -8,6 +8,7 @@ export interface FacilitySourceSpot {
   category: SpotCategory;
   accessibility_features: string[];
   photo_urls: string[];
+  source: SpotSource;
 }
 
 export interface FacilityListItem {
@@ -18,6 +19,7 @@ export interface FacilityListItem {
   isWheelchairAccessible: boolean;
   hasAccessibleToilet: boolean;
   hasElevator: boolean;
+  isUnverifiedImport: boolean;
 }
 
 export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
@@ -30,5 +32,6 @@ export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
     hasAccessibleToilet:
       spot.category === 'toilet' || spot.accessibility_features.includes(MULTIPURPOSE_TOILET_TAG),
     hasElevator: spot.category === 'elevator' || spot.accessibility_features.includes(ELEVATOR_TAG),
+    isUnverifiedImport: spot.source === 'openstreetmap',
   };
 }

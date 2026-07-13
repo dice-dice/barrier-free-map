@@ -55,6 +55,7 @@ export function NearbyMapScreen() {
           <Text style={styles.errorBadgeText}>{spotsError}</Text>
         </View>
       ) : null}
+      <Text style={styles.attribution}>© OpenStreetMap contributors</Text>
     </View>
   );
 }
@@ -95,5 +96,14 @@ const styles = StyleSheet.create({
     color: '#d92d20',
     fontSize: 13,
     textAlign: 'center',
+  },
+  attribution: {
+    position: 'absolute',
+    bottom: 4,
+    right: 8,
+    fontSize: 10,
+    color: '#5a5a5a',
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    paddingHorizontal: 4,
   },
 });

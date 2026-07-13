@@ -1,6 +1,7 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useFacilities } from '../hooks/useFacilities';
 import { FacilityListItem } from './FacilityListItem';
+import { OsmAttribution } from './OsmAttribution';
 
 export function FacilityList() {
   const { facilities, loading, errorMessage } = useFacilities();
@@ -35,6 +36,7 @@ export function FacilityList() {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <FacilityListItem facility={item} />}
       contentContainerStyle={styles.listContent}
+      ListFooterComponent={OsmAttribution}
     />
   );
 }

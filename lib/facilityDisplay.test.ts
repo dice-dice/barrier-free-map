@@ -8,6 +8,7 @@ describe('toFacilityListItem', () => {
     category: 'other' as const,
     accessibility_features: [] as string[],
     photo_urls: [] as string[],
+    source: 'user_submitted' as const,
   };
 
   it('passes through id, name, and address', () => {
@@ -71,5 +72,15 @@ describe('toFacilityListItem', () => {
   it('does not mark elevator when neither category nor tag matches', () => {
     const result = toFacilityListItem(baseSpot);
     expect(result.hasElevator).toBe(false);
+  });
+
+  it('marks unverified when source is openstreetmap', () => {
+    const result = toFacilityListItem({ ...baseSpot, source: 'openstreetmap' });
+    expect(result.isUnverifiedImport).toBe(true);
+  });
+
+  it('does not mark unverified when source is user_submitted', () => {
+    const result = toFacilityListItem(baseSpot);
+    expect(result.isUnverifiedImport).toBe(false);
   });
 });

@@ -8,6 +8,8 @@ export type SpotCategory =
 
 export type SpotStatus = "pending" | "approved" | "rejected";
 
+export type SpotSource = "user_submitted" | "openstreetmap";
+
 export interface Database {
   public: {
     Tables: {
@@ -43,6 +45,7 @@ export interface Database {
           address: string | null;
           photo_urls: string[];
           status: SpotStatus;
+          source: SpotSource;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -57,6 +60,7 @@ export interface Database {
           address?: string | null;
           photo_urls?: string[];
           status?: SpotStatus;
+          source?: SpotSource;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -71,6 +75,7 @@ export interface Database {
           address?: string | null;
           photo_urls?: string[];
           status?: SpotStatus;
+          source?: SpotSource;
           created_by?: string;
           created_at?: string;
           updated_at?: string;
@@ -147,6 +152,7 @@ export interface Database {
           longitude: number;
           address: string | null;
           photo_urls: string[];
+          source: SpotSource;
           average_rating: number;
           review_count: number;
           created_by: string;
