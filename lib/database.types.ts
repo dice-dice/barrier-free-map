@@ -82,12 +82,12 @@ export interface Database {
         };
         Relationships: [];
       };
-      reviews: {
+      spot_confirmations: {
         Row: {
           id: string;
           spot_id: string;
           user_id: string;
-          rating: number;
+          is_accurate: boolean;
           comment: string | null;
           created_at: string;
           updated_at: string;
@@ -96,7 +96,7 @@ export interface Database {
           id?: string;
           spot_id: string;
           user_id: string;
-          rating: number;
+          is_accurate: boolean;
           comment?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -105,7 +105,7 @@ export interface Database {
           id?: string;
           spot_id?: string;
           user_id?: string;
-          rating?: number;
+          is_accurate?: boolean;
           comment?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -129,8 +129,8 @@ export interface Database {
           created_by: string;
           created_at: string;
           updated_at: string;
-          average_rating: number;
-          review_count: number;
+          confirmed_count: number;
+          disputed_count: number;
         };
         Relationships: [];
       };
@@ -154,8 +154,8 @@ export interface Database {
           address: string | null;
           photo_urls: string[];
           source: SpotSource;
-          average_rating: number;
-          review_count: number;
+          confirmed_count: number;
+          disputed_count: number;
           created_by: string;
           created_at: string;
           updated_at: string;

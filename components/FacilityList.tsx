@@ -1,10 +1,16 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useFacilities } from '../hooks/useFacilities';
+import { useMyConfirmations } from '../hooks/useMyConfirmations';
 import { FacilityListItem } from './FacilityListItem';
 import { OsmAttribution } from './OsmAttribution';
 
-export function FacilityList() {
+interface FacilityListProps {
+  userId: string;
+}
+
+export function FacilityList({ userId }: FacilityListProps) {
   const { facilities, loading, errorMessage } = useFacilities();
+  const myConfirmations = useMyConfirmations(userId);
 
   if (loading) {
     return (
@@ -34,7 +40,9 @@ export function FacilityList() {
     <FlatList
       data={facilities}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <FacilityListItem facility={item} />}
+      renderItem={({ item }) => (
+        <FacilityListItem facility={item} userId={userId} myConfirmation={myConfirmations[item.id]} />
+      )}
       contentContainerStyle={styles.listContent}
       ListFooterComponent={OsmAttribution}
     />

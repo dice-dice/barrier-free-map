@@ -11,6 +11,8 @@ export interface FacilitySourceSpot {
   source: SpotSource;
   latitude: number;
   longitude: number;
+  confirmed_count: number;
+  disputed_count: number;
 }
 
 export interface FacilityListItem {
@@ -24,6 +26,8 @@ export interface FacilityListItem {
   isUnverifiedImport: boolean;
   latitude: number;
   longitude: number;
+  confirmedCount: number;
+  disputedCount: number;
 }
 
 export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
@@ -39,5 +43,7 @@ export function toFacilityListItem(spot: FacilitySourceSpot): FacilityListItem {
       spot.category === 'toilet' || spot.accessibility_features.includes(MULTIPURPOSE_TOILET_TAG),
     hasElevator: spot.category === 'elevator' || spot.accessibility_features.includes(ELEVATOR_TAG),
     isUnverifiedImport: spot.source === 'openstreetmap',
+    confirmedCount: spot.confirmed_count,
+    disputedCount: spot.disputed_count,
   };
 }

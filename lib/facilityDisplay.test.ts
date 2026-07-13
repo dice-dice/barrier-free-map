@@ -11,6 +11,8 @@ describe('toFacilityListItem', () => {
     source: 'user_submitted' as const,
     latitude: 35.681236,
     longitude: 139.767052,
+    confirmed_count: 0,
+    disputed_count: 0,
   };
 
   it('passes through id, name, and address', () => {

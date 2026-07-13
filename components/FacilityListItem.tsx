@@ -1,12 +1,16 @@
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { MyConfirmation } from '../hooks/useMyConfirmations';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
+import { ConfirmationButtons } from './ConfirmationButtons';
 import { FacilityPhotoGallery } from './FacilityPhotoGallery';
 
 interface FacilityListItemProps {
   facility: FacilityListItemData;
+  userId: string;
+  myConfirmation?: MyConfirmation;
 }
 
-export function FacilityListItem({ facility }: FacilityListItemProps) {
+export function FacilityListItem({ facility, userId, myConfirmation }: FacilityListItemProps) {
   const openInGoogleMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${facility.latitude},${facility.longitude}`;
     Linking.openURL(url);
@@ -30,6 +34,13 @@ export function FacilityListItem({ facility }: FacilityListItemProps) {
       <Pressable onPress={openInGoogleMaps} style={styles.mapLink}>
         <Text style={styles.mapLinkText}>Googleマップで開く</Text>
       </Pressable>
+      <ConfirmationButtons
+        spotId={facility.id}
+        userId={userId}
+        confirmedCount={facility.confirmedCount}
+        disputedCount={facility.disputedCount}
+        myConfirmation={myConfirmation}
+      />
     </View>
   );
 }

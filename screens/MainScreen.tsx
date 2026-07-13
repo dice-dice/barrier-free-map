@@ -37,7 +37,7 @@ export function MainScreen({ session }: MainScreenProps) {
           <ViewModeTab label="地図" active={viewMode === 'map'} onPress={() => setViewMode('map')} />
         </View>
       </View>
-      {viewMode === 'list' ? <FacilityList /> : <NearbyMapScreen />}
+      {viewMode === 'list' ? <FacilityList userId={session.user.id} /> : <NearbyMapScreen />}
     </View>
   );
 }
