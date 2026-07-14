@@ -8,10 +8,11 @@ import { SpotComments } from './SpotComments';
 
 interface FacilityListItemProps {
   facility: FacilityListItemData;
-  userId: string;
+  userId: string | null;
   myConfirmation?: MyConfirmation;
   comments: SpotComment[];
   onViewOnMap: (facility: FacilityListItemData) => void;
+  onRequireLogin: () => void;
 }
 
 export function FacilityListItem({
@@ -20,6 +21,7 @@ export function FacilityListItem({
   myConfirmation,
   comments,
   onViewOnMap,
+  onRequireLogin,
 }: FacilityListItemProps) {
   return (
     <View className="mb-3 rounded-xl border border-[#e5e5e5] p-4">
@@ -47,6 +49,7 @@ export function FacilityListItem({
         confirmedCount={facility.confirmedCount}
         disputedCount={facility.disputedCount}
         myConfirmation={myConfirmation}
+        onRequireLogin={onRequireLogin}
       />
       <SpotComments comments={comments} />
     </View>

@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 import { useSession } from './hooks/useSession';
 import { queryClient } from './lib/queryClient';
-import { AuthScreen } from './screens/AuthScreen';
 import { MainScreen } from './screens/MainScreen';
 
 export default function App() {
@@ -21,7 +20,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {session ? <MainScreen session={session} /> : <AuthScreen />}
+      <MainScreen session={session} />
       <StatusBar style="auto" />
     </QueryClientProvider>
   );

@@ -23,10 +23,11 @@ async function fetchMyConfirmations(userId: string): Promise<Record<string, MyCo
   return result;
 }
 
-export function useMyConfirmations(userId: string) {
+export function useMyConfirmations(userId: string | null) {
   const { data } = useQuery({
     queryKey: ['myConfirmations', userId],
-    queryFn: () => fetchMyConfirmations(userId),
+    queryFn: () => fetchMyConfirmations(userId as string),
+    enabled: userId !== null,
   });
 
   return data ?? {};

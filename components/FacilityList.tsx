@@ -7,11 +7,12 @@ import { FacilityListItem } from './FacilityListItem';
 import { OsmAttribution } from './OsmAttribution';
 
 interface FacilityListProps {
-  userId: string;
+  userId: string | null;
   onViewOnMap: (facility: FacilityListItemData) => void;
+  onRequireLogin: () => void;
 }
 
-export function FacilityList({ userId, onViewOnMap }: FacilityListProps) {
+export function FacilityList({ userId, onViewOnMap, onRequireLogin }: FacilityListProps) {
   const { facilities, loading, errorMessage } = useFacilities();
   const myConfirmations = useMyConfirmations(userId);
   const publicComments = usePublicComments();
@@ -51,6 +52,7 @@ export function FacilityList({ userId, onViewOnMap }: FacilityListProps) {
           myConfirmation={myConfirmations[item.id]}
           comments={publicComments[item.id] ?? []}
           onViewOnMap={onViewOnMap}
+          onRequireLogin={onRequireLogin}
         />
       )}
       contentContainerClassName="px-6 pb-6"

@@ -5,10 +5,11 @@ import type { MyConfirmation } from '../hooks/useMyConfirmations';
 
 interface ConfirmationButtonsProps {
   spotId: string;
-  userId: string;
+  userId: string | null;
   confirmedCount: number;
   disputedCount: number;
   myConfirmation?: MyConfirmation;
+  onRequireLogin: () => void;
 }
 
 export function ConfirmationButtons({
@@ -17,11 +18,17 @@ export function ConfirmationButtons({
   confirmedCount,
   disputedCount,
   myConfirmation,
+  onRequireLogin,
 }: ConfirmationButtonsProps) {
   const [comment, setComment] = useState(myConfirmation?.comment ?? '');
   const { mutate, isPending } = useConfirmSpot();
 
   const handleVote = (isAccurate: boolean) => {
+    if (!userId) {
+      onRequireLogin();
+      return;
+    }
+
     mutate({ spotId, userId, isAccurate, comment: comment.trim() });
   };
 
