@@ -20,10 +20,10 @@ export function ConfirmationButtons({
   myConfirmation,
   onRequireLogin,
 }: ConfirmationButtonsProps) {
-  const [comment, setComment] = useState(myConfirmation?.comment ?? '');
+  const [comment, setComment] = useState('');
   const { mutate, isPending } = useConfirmSpot();
 
-  const hasUnsavedComment = comment.trim() !== '' && comment.trim() !== (myConfirmation?.comment ?? '');
+  const hasUnsavedComment = comment.trim() !== '';
 
   const handleVote = (isAccurate: boolean) => {
     if (!userId) {
