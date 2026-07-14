@@ -1,6 +1,7 @@
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useFacilities } from '../hooks/useFacilities';
 import { useMyConfirmations } from '../hooks/useMyConfirmations';
+import { usePublicComments } from '../hooks/usePublicComments';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
 import { FacilityListItem } from './FacilityListItem';
 import { OsmAttribution } from './OsmAttribution';
@@ -13,6 +14,7 @@ interface FacilityListProps {
 export function FacilityList({ userId, onViewOnMap }: FacilityListProps) {
   const { facilities, loading, errorMessage } = useFacilities();
   const myConfirmations = useMyConfirmations(userId);
+  const publicComments = usePublicComments();
 
   if (loading) {
     return (
@@ -47,6 +49,7 @@ export function FacilityList({ userId, onViewOnMap }: FacilityListProps) {
           facility={item}
           userId={userId}
           myConfirmation={myConfirmations[item.id]}
+          comments={publicComments[item.id] ?? []}
           onViewOnMap={onViewOnMap}
         />
       )}

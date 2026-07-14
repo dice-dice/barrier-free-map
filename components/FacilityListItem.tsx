@@ -1,17 +1,26 @@
 import { Pressable, Text, View } from 'react-native';
 import type { MyConfirmation } from '../hooks/useMyConfirmations';
+import type { SpotComment } from '../hooks/usePublicComments';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
 import { ConfirmationButtons } from './ConfirmationButtons';
 import { FacilityPhotoGallery } from './FacilityPhotoGallery';
+import { SpotComments } from './SpotComments';
 
 interface FacilityListItemProps {
   facility: FacilityListItemData;
   userId: string;
   myConfirmation?: MyConfirmation;
+  comments: SpotComment[];
   onViewOnMap: (facility: FacilityListItemData) => void;
 }
 
-export function FacilityListItem({ facility, userId, myConfirmation, onViewOnMap }: FacilityListItemProps) {
+export function FacilityListItem({
+  facility,
+  userId,
+  myConfirmation,
+  comments,
+  onViewOnMap,
+}: FacilityListItemProps) {
   return (
     <View className="mb-3 rounded-xl border border-[#e5e5e5] p-4">
       <FacilityPhotoGallery photoUrls={facility.photoUrls} />
@@ -39,6 +48,7 @@ export function FacilityListItem({ facility, userId, myConfirmation, onViewOnMap
         disputedCount={facility.disputedCount}
         myConfirmation={myConfirmation}
       />
+      <SpotComments comments={comments} />
     </View>
   );
 }

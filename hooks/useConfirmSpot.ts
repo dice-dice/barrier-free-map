@@ -33,6 +33,7 @@ export function useConfirmSpot() {
       queryClient.invalidateQueries({ queryKey: ['facilities'] });
       queryClient.invalidateQueries({ queryKey: ['nearbySpots'] });
       queryClient.invalidateQueries({ queryKey: ['myConfirmations', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: ['publicComments'] });
     },
   });
 }
