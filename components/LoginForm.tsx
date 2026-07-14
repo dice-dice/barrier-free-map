@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSignIn } from '../hooks/useSignIn';
 import { isValidEmail, isValidPassword } from '../lib/validation';
 import { AuthTextInput } from './AuthTextInput';
@@ -54,7 +54,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="w-full">
       <AuthTextInput
         label="メールアドレス"
         value={email}
@@ -77,20 +77,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         placeholder="8文字以上"
         editable={!loading}
       />
-      {errorMessage ? <Text style={styles.formError}>{errorMessage}</Text> : null}
+      {errorMessage ? (
+        <Text className="mb-3 text-center text-[14px] text-[#d92d20]">{errorMessage}</Text>
+      ) : null}
       <PrimaryButton label="ログイン" onPress={handleSubmit} loading={loading} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  formError: {
-    color: '#d92d20',
-    fontSize: 14,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-});

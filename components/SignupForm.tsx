@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSignUp } from '../hooks/useSignUp';
 import { isValidEmail, isValidPassword } from '../lib/validation';
 import { AuthTextInput } from './AuthTextInput';
@@ -60,7 +60,7 @@ export function SignupForm() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="w-full">
       <AuthTextInput
         label="メールアドレス"
         value={email}
@@ -94,27 +94,13 @@ export function SignupForm() {
         placeholder="もう一度入力してください"
         editable={!loading}
       />
-      {errorMessage ? <Text style={styles.formError}>{errorMessage}</Text> : null}
-      {infoMessage ? <Text style={styles.formInfo}>{infoMessage}</Text> : null}
+      {errorMessage ? (
+        <Text className="mb-3 text-center text-[14px] text-[#d92d20]">{errorMessage}</Text>
+      ) : null}
+      {infoMessage ? (
+        <Text className="mb-3 text-center text-[14px] text-[#1a7f37]">{infoMessage}</Text>
+      ) : null}
       <PrimaryButton label="アカウント作成" onPress={handleSubmit} loading={loading} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  formError: {
-    color: '#d92d20',
-    fontSize: 14,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  formInfo: {
-    color: '#1a7f37',
-    fontSize: 14,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-});

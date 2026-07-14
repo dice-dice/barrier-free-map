@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 interface SelectableChipProps {
   label: string;
@@ -8,28 +8,13 @@ interface SelectableChipProps {
 
 export function SelectableChip({ label, selected, onPress }: SelectableChipProps) {
   return (
-    <Pressable style={[styles.chip, selected ? styles.chipSelected : null]} onPress={onPress}>
-      <Text style={[styles.label, selected ? styles.labelSelected : null]}>{label}</Text>
+    <Pressable
+      onPress={onPress}
+      className={`rounded-full px-3.5 py-2 ${selected ? 'bg-blue-600' : 'bg-[#f2f2f2]'}`}
+    >
+      <Text className={`text-[13px] font-semibold ${selected ? 'text-white' : 'text-[#5a5a5a]'}`}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  chip: {
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: '#f2f2f2',
-  },
-  chipSelected: {
-    backgroundColor: '#2563eb',
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#5a5a5a',
-  },
-  labelSelected: {
-    color: '#fff',
-  },
-});

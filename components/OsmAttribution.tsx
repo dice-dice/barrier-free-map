@@ -1,18 +1,9 @@
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
 export function OsmAttribution() {
   return (
-    <Text style={styles.text}>
+    <Text className="py-4 text-center text-[11px] text-[#9a9a9a]">
       一部の施設データは © OpenStreetMap contributors（ODbLライセンス）を含みます
     </Text>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 11,
-    color: '#9a9a9a',
-    textAlign: 'center',
-    paddingVertical: 16,
-  },
-});

@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { LinkButton } from '../components/LinkButton';
 import { SignupForm } from '../components/SignupForm';
 
@@ -8,11 +8,11 @@ interface SignupScreenProps {
 
 export function SignupScreen({ onNavigateToLogin }: SignupScreenProps) {
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>アカウント作成</Text>
-          <Text style={styles.subtitle}>メールアドレスとパスワードを入力してください</Text>
+    <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerClassName="flex-grow justify-center px-6" keyboardShouldPersistTaps="handled">
+        <View className="mb-8">
+          <Text className="mb-2 text-[28px] font-bold text-[#1a1a1a]">アカウント作成</Text>
+          <Text className="text-[14px] text-[#5a5a5a]">メールアドレスとパスワードを入力してください</Text>
         </View>
         <SignupForm />
         <LinkButton label="すでにアカウントをお持ちの方はこちら" onPress={onNavigateToLogin} />
@@ -20,28 +20,3 @@ export function SignupScreen({ onNavigateToLogin }: SignupScreenProps) {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  header: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#5a5a5a',
-  },
-});

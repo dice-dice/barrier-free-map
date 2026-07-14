@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 interface LinkButtonProps {
   label: string;
@@ -7,20 +7,8 @@ interface LinkButtonProps {
 
 export function LinkButton({ label, onPress }: LinkButtonProps) {
   return (
-    <Pressable onPress={onPress} style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+    <Pressable onPress={onPress} className="mt-5 items-center">
+      <Text className="text-[14px] font-semibold text-blue-600">{label}</Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  label: {
-    color: '#2563eb',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});

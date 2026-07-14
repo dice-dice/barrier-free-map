@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet } from 'react-native';
+import { Image, ScrollView } from 'react-native';
 
 interface FacilityPhotoGalleryProps {
   photoUrls: string[];
@@ -13,27 +13,17 @@ export function FacilityPhotoGallery({ photoUrls }: FacilityPhotoGalleryProps) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={styles.container}
-      contentContainerStyle={styles.content}
+      className="mb-2.5"
+      contentContainerClassName="gap-2"
     >
       {photoUrls.map((url, index) => (
-        <Image key={`${url}-${index}`} source={{ uri: url }} style={styles.photo} resizeMode="cover" />
+        <Image
+          key={`${url}-${index}`}
+          source={{ uri: url }}
+          className="h-[90px] w-[120px] rounded-lg bg-[#f2f2f2]"
+          resizeMode="cover"
+        />
       ))}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 10,
-  },
-  content: {
-    gap: 8,
-  },
-  photo: {
-    width: 120,
-    height: 90,
-    borderRadius: 8,
-    backgroundColor: '#f2f2f2',
-  },
-});

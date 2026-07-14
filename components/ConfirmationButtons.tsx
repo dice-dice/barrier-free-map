@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { useConfirmSpot } from '../hooks/useConfirmSpot';
 import type { MyConfirmation } from '../hooks/useMyConfirmations';
 
@@ -26,26 +26,30 @@ export function ConfirmationButtons({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.question}>この情報は合っていましたか？</Text>
-      <View style={styles.buttonRow}>
+    <View className="mt-3 border-t border-[#e5e5e5] pt-3">
+      <Text className="mb-2 text-[12px] text-[#5a5a5a]">この情報は合っていましたか？</Text>
+      <View className="mb-2 flex-row gap-2">
         <Pressable
-          style={[styles.voteButton, myConfirmation?.isAccurate === true ? styles.voteButtonActiveGood : null]}
+          className={`rounded-lg px-3 py-1.5 ${
+            myConfirmation?.isAccurate === true ? 'bg-[#e7f6ec]' : 'bg-[#f2f2f2]'
+          }`}
           onPress={() => handleVote(true)}
           disabled={isPending}
         >
-          <Text style={styles.voteButtonText}>👍 {confirmedCount}</Text>
+          <Text className="text-[13px] font-semibold text-[#1a1a1a]">👍 {confirmedCount}</Text>
         </Pressable>
         <Pressable
-          style={[styles.voteButton, myConfirmation?.isAccurate === false ? styles.voteButtonActiveBad : null]}
+          className={`rounded-lg px-3 py-1.5 ${
+            myConfirmation?.isAccurate === false ? 'bg-[#fdeaea]' : 'bg-[#f2f2f2]'
+          }`}
           onPress={() => handleVote(false)}
           disabled={isPending}
         >
-          <Text style={styles.voteButtonText}>👎 {disputedCount}</Text>
+          <Text className="text-[13px] font-semibold text-[#1a1a1a]">👎 {disputedCount}</Text>
         </Pressable>
       </View>
       <TextInput
-        style={styles.commentInput}
+        className="rounded-lg border border-[#d0d0d0] px-2.5 py-1.5 text-[13px]"
         placeholder="コメント（任意）"
         value={comment}
         onChangeText={setComment}
@@ -54,47 +58,3 @@ export function ConfirmationButtons({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e5e5',
-  },
-  question: {
-    fontSize: 12,
-    color: '#5a5a5a',
-    marginBottom: 8,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 8,
-  },
-  voteButton: {
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#f2f2f2',
-  },
-  voteButtonActiveGood: {
-    backgroundColor: '#e7f6ec',
-  },
-  voteButtonActiveBad: {
-    backgroundColor: '#fdeaea',
-  },
-  voteButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  commentInput: {
-    borderWidth: 1,
-    borderColor: '#d0d0d0',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    fontSize: 13,
-  },
-});

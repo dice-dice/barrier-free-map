@@ -1,6 +1,7 @@
+import './global.css';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useSession } from './hooks/useSession';
 import { queryClient } from './lib/queryClient';
 import { AuthScreen } from './screens/AuthScreen';
@@ -11,7 +12,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" />
         <StatusBar style="auto" />
       </View>
@@ -25,12 +26,3 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-});

@@ -1,49 +1,22 @@
-import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { Text, TextInput, TextInputProps, View } from 'react-native';
 
 interface AuthTextInputProps extends TextInputProps {
   label: string;
   errorMessage?: string;
 }
 
-export function AuthTextInput({ label, errorMessage, style, ...rest }: AuthTextInputProps) {
+export function AuthTextInput({ label, errorMessage, ...rest }: AuthTextInputProps) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+    <View className="mb-4">
+      <Text className="mb-1.5 text-[14px] font-semibold text-[#1a1a1a]">{label}</Text>
       <TextInput
-        style={[styles.input, errorMessage ? styles.inputError : null, style]}
+        className={`rounded-lg border bg-white px-3 py-2.5 text-[16px] ${
+          errorMessage ? 'border-[#d92d20]' : 'border-[#d0d0d0]'
+        }`}
         placeholderTextColor="#9a9a9a"
         {...rest}
       />
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+      {errorMessage ? <Text className="mt-1 text-[13px] text-[#d92d20]">{errorMessage}</Text> : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 6,
-    color: '#1a1a1a',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d0d0d0',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  inputError: {
-    borderColor: '#d92d20',
-  },
-  errorText: {
-    marginTop: 4,
-    color: '#d92d20',
-    fontSize: 13,
-  },
-});
