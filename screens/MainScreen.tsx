@@ -1,9 +1,10 @@
 import type { Session } from '@supabase/supabase-js';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { FacilityList } from '../components/FacilityList';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useSignOut } from '../hooks/useSignOut';
+import type { FacilityListItem } from '../lib/facilityDisplay';
 import { CreateFacilityScreen } from './CreateFacilityScreen';
 import { NearbyMapScreen } from './NearbyMapScreen';
 
@@ -17,27 +18,67 @@ export function MainScreen({ session }: MainScreenProps) {
   const { signOut, loading, errorMessage } = useSignOut();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [isCreating, setIsCreating] = useState(false);
+  const [focusedFacility, setFocusedFacility] = useState<FacilityListItem | null>(null);
+  const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
+    null
+  );
 
   if (isCreating) {
-    return <CreateFacilityScreen createdBy={session.user.id} onDone={() => setIsCreating(false)} />;
+    return (
+      <CreateFacilityScreen
+        createdBy={session.user.id}
+        onDone={() => {
+          setIsCreating(false);
+          setPendingLocation(null);
+        }}
+        initialLocation={pendingLocation}
+      />
+    );
   }
 
+  const handleViewOnMap = (facility: FacilityListItem) => {
+    setFocusedFacility(facility);
+    setViewMode('map');
+  };
+
+  const handleSelectTab = (mode: ViewMode) => {
+    if (mode === 'list') {
+      setFocusedFacility(null);
+    }
+    setViewMode(mode);
+  };
+
+  const handleSelectLocation = (location: { latitude: number; longitude: number }) => {
+    setPendingLocation(location);
+    setIsCreating(true);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>施設一覧</Text>
-        <Text style={styles.email}>{session.user.email}</Text>
-        {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-        <View style={styles.actionRow}>
-          <PrimaryButton label="施設を登録" onPress={() => setIsCreating(true)} />
+    <View className="flex-1 bg-white">
+      <View className="px-6 pb-4 pt-6">
+        <Text className="mb-1 text-[20px] font-semibold text-[#1a1a1a]">施設一覧</Text>
+        <Text className="mb-3 text-[14px] text-[#5a5a5a]">{session.user.email}</Text>
+        {errorMessage ? <Text className="mb-3 text-[14px] text-[#d92d20]">{errorMessage}</Text> : null}
+        <View className="flex-row gap-2">
+          <PrimaryButton
+            label="施設を登録"
+            onPress={() => {
+              setPendingLocation(null);
+              setIsCreating(true);
+            }}
+          />
           <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
         </View>
-        <View style={styles.tabRow}>
-          <ViewModeTab label="一覧" active={viewMode === 'list'} onPress={() => setViewMode('list')} />
-          <ViewModeTab label="地図" active={viewMode === 'map'} onPress={() => setViewMode('map')} />
+        <View className="mt-4 flex-row gap-2">
+          <ViewModeTab label="一覧" active={viewMode === 'list'} onPress={() => handleSelectTab('list')} />
+          <ViewModeTab label="地図" active={viewMode === 'map'} onPress={() => handleSelectTab('map')} />
         </View>
       </View>
-      {viewMode === 'list' ? <FacilityList userId={session.user.id} /> : <NearbyMapScreen />}
+      {viewMode === 'list' ? (
+        <FacilityList userId={session.user.id} onViewOnMap={handleViewOnMap} />
+      ) : (
+        <NearbyMapScreen focusedFacility={focusedFacility} onSelectLocation={handleSelectLocation} />
+      )}
     </View>
   );
 }
@@ -50,63 +91,13 @@ interface ViewModeTabProps {
 
 function ViewModeTab({ label, active, onPress }: ViewModeTabProps) {
   return (
-    <Pressable style={[styles.tab, active ? styles.tabActive : null]} onPress={onPress}>
-      <Text style={[styles.tabText, active ? styles.tabTextActive : null]}>{label}</Text>
+    <Pressable
+      onPress={onPress}
+      className={`flex-1 items-center rounded-lg py-2.5 ${active ? 'bg-blue-600' : 'bg-[#f2f2f2]'}`}
+    >
+      <Text className={`text-[14px] font-semibold ${active ? 'text-white' : 'text-[#5a5a5a]'}`}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  email: {
-    fontSize: 14,
-    color: '#5a5a5a',
-    marginBottom: 12,
-  },
-  error: {
-    color: '#d92d20',
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  tabRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 16,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
-  },
-  tabActive: {
-    backgroundColor: '#2563eb',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#5a5a5a',
-  },
-  tabTextActive: {
-    color: '#fff',
-  },
-});

@@ -1,20 +1,22 @@
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useFacilities } from '../hooks/useFacilities';
 import { useMyConfirmations } from '../hooks/useMyConfirmations';
+import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
 import { FacilityListItem } from './FacilityListItem';
 import { OsmAttribution } from './OsmAttribution';
 
 interface FacilityListProps {
   userId: string;
+  onViewOnMap: (facility: FacilityListItemData) => void;
 }
 
-export function FacilityList({ userId }: FacilityListProps) {
+export function FacilityList({ userId, onViewOnMap }: FacilityListProps) {
   const { facilities, loading, errorMessage } = useFacilities();
   const myConfirmations = useMyConfirmations(userId);
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <View className="flex-1 items-center justify-center px-6">
         <ActivityIndicator size="large" />
       </View>
     );
@@ -22,16 +24,16 @@ export function FacilityList({ userId }: FacilityListProps) {
 
   if (errorMessage) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{errorMessage}</Text>
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-[14px] text-[#d92d20]">{errorMessage}</Text>
       </View>
     );
   }
 
   if (facilities.length === 0) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>施設が登録されていません</Text>
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-[14px] text-[#5a5a5a]">施設が登録されていません</Text>
       </View>
     );
   }
@@ -41,33 +43,15 @@ export function FacilityList({ userId }: FacilityListProps) {
       data={facilities}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <FacilityListItem facility={item} userId={userId} myConfirmation={myConfirmations[item.id]} />
+        <FacilityListItem
+          facility={item}
+          userId={userId}
+          myConfirmation={myConfirmations[item.id]}
+          onViewOnMap={onViewOnMap}
+        />
       )}
-      contentContainerStyle={styles.listContent}
+      contentContainerClassName="px-6 pb-6"
       ListFooterComponent={OsmAttribution}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  listContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  errorText: {
-    color: '#d92d20',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  emptyText: {
-    color: '#5a5a5a',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});

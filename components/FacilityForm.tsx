@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useCreateFacility } from '../hooks/useCreateFacility';
 import type { SpotCategory } from '../lib/database.types';
@@ -12,9 +12,10 @@ import { SelectableChip } from './SelectableChip';
 interface FacilityFormProps {
   createdBy: string;
   onSuccess: () => void;
+  initialLocation?: { latitude: number; longitude: number } | null;
 }
 
-export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
+export function FacilityForm({ createdBy, onSuccess, initialLocation }: FacilityFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
@@ -22,8 +23,15 @@ export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
   const [accessibilityFeatures, setAccessibilityFeatures] = useState<string[]>([]);
   const [nameError, setNameError] = useState<string | undefined>();
 
-  const { coordinates, loading: locationLoading, errorMessage: locationError } = useCurrentLocation();
+  const {
+    coordinates: currentCoordinates,
+    loading: locationLoading,
+    errorMessage: locationError,
+  } = useCurrentLocation();
   const { mutate, isPending, error } = useCreateFacility();
+
+  const coordinates = initialLocation ?? currentCoordinates;
+  const isUsingSelectedLocation = initialLocation != null;
 
   const toggleFeature = (tag: string) => {
     setAccessibilityFeatures((current) =>
@@ -63,10 +71,12 @@ export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
     );
   };
 
-  const canSubmit = !locationLoading && coordinates !== null && !isPending;
+  const canSubmit = isUsingSelectedLocation
+    ? coordinates !== null && !isPending
+    : !locationLoading && coordinates !== null && !isPending;
 
   return (
-    <View style={styles.container}>
+    <View className="w-full">
       <AuthTextInput
         label="施設名"
         value={name}
@@ -91,8 +101,8 @@ export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
         editable={!isPending}
       />
 
-      <Text style={styles.sectionLabel}>カテゴリ</Text>
-      <View style={styles.chipRow}>
+      <Text className="mb-2 text-[14px] font-semibold text-[#1a1a1a]">カテゴリ</Text>
+      <View className="mb-5 flex-row flex-wrap gap-2">
         {CATEGORY_OPTIONS.map((option) => (
           <SelectableChip
             key={option.value}
@@ -103,8 +113,8 @@ export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
         ))}
       </View>
 
-      <Text style={styles.sectionLabel}>バリアフリー情報</Text>
-      <View style={styles.chipRow}>
+      <Text className="mb-2 text-[14px] font-semibold text-[#1a1a1a]">バリアフリー情報</Text>
+      <View className="mb-5 flex-row flex-wrap gap-2">
         {ACCESSIBILITY_FEATURE_OPTIONS.map((option) => (
           <SelectableChip
             key={option.tag}
@@ -115,49 +125,28 @@ export function FacilityForm({ createdBy, onSuccess }: FacilityFormProps) {
         ))}
       </View>
 
-      <Text style={styles.sectionLabel}>位置情報</Text>
-      {locationLoading ? (
-        <Text style={styles.locationText}>現在地を取得中です...</Text>
+      <Text className="mb-2 text-[14px] font-semibold text-[#1a1a1a]">位置情報</Text>
+      {isUsingSelectedLocation ? (
+        <Text className="mb-5 text-[13px] text-[#5a5a5a]">
+          地図で選択した地点を施設の位置として登録します（緯度 {coordinates!.latitude.toFixed(5)} / 経度{' '}
+          {coordinates!.longitude.toFixed(5)}）
+        </Text>
+      ) : locationLoading ? (
+        <Text className="mb-5 text-[13px] text-[#5a5a5a]">現在地を取得中です...</Text>
       ) : locationError || !coordinates ? (
-        <Text style={styles.errorText}>{locationError ?? '現在地を取得できませんでした'}</Text>
+        <Text className="mb-5 text-[13px] text-[#d92d20]">
+          {locationError ?? '現在地を取得できませんでした'}
+        </Text>
       ) : (
-        <Text style={styles.locationText}>
+        <Text className="mb-5 text-[13px] text-[#5a5a5a]">
           現在地を施設の位置として登録します（緯度 {coordinates.latitude.toFixed(5)} / 経度{' '}
           {coordinates.longitude.toFixed(5)}）
         </Text>
       )}
 
-      {error ? <Text style={styles.errorText}>{error.message}</Text> : null}
+      {error ? <Text className="mb-5 text-[13px] text-[#d92d20]">{error.message}</Text> : null}
 
       <PrimaryButton label="登録する" onPress={handleSubmit} loading={isPending} disabled={!canSubmit} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  sectionLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 8,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 20,
-  },
-  locationText: {
-    fontSize: 13,
-    color: '#5a5a5a',
-    marginBottom: 20,
-  },
-  errorText: {
-    fontSize: 13,
-    color: '#d92d20',
-    marginBottom: 20,
-  },
-});

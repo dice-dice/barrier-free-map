@@ -1,49 +1,26 @@
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { FacilityForm } from '../components/FacilityForm';
 import { LinkButton } from '../components/LinkButton';
 
 interface CreateFacilityScreenProps {
   createdBy: string;
   onDone: () => void;
+  initialLocation?: { latitude: number; longitude: number } | null;
 }
 
-export function CreateFacilityScreen({ createdBy, onDone }: CreateFacilityScreenProps) {
+export function CreateFacilityScreen({ createdBy, onDone, initialLocation }: CreateFacilityScreenProps) {
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>施設を登録</Text>
-          <Text style={styles.subtitle}>今いる場所を施設として登録します</Text>
+    <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerClassName="flex-grow px-6 pb-10 pt-6" keyboardShouldPersistTaps="handled">
+        <View className="mb-6">
+          <Text className="mb-1.5 text-[24px] font-bold text-[#1a1a1a]">施設を登録</Text>
+          <Text className="text-[14px] text-[#5a5a5a]">
+            {initialLocation ? '地図で選択した場所を施設として登録します' : '今いる場所を施設として登録します'}
+          </Text>
         </View>
-        <FacilityForm createdBy={createdBy} onSuccess={onDone} />
+        <FacilityForm createdBy={createdBy} onSuccess={onDone} initialLocation={initialLocation} />
         <LinkButton label="キャンセルして戻る" onPress={onDone} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 40,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#5a5a5a',
-  },
-});

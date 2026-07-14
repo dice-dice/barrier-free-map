@@ -1,4 +1,4 @@
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { MyConfirmation } from '../hooks/useMyConfirmations';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
 import { ConfirmationButtons } from './ConfirmationButtons';
@@ -8,31 +8,29 @@ interface FacilityListItemProps {
   facility: FacilityListItemData;
   userId: string;
   myConfirmation?: MyConfirmation;
+  onViewOnMap: (facility: FacilityListItemData) => void;
 }
 
-export function FacilityListItem({ facility, userId, myConfirmation }: FacilityListItemProps) {
-  const openInGoogleMaps = () => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${facility.latitude},${facility.longitude}`;
-    Linking.openURL(url);
-  };
-
+export function FacilityListItem({ facility, userId, myConfirmation, onViewOnMap }: FacilityListItemProps) {
   return (
-    <View style={styles.card}>
+    <View className="mb-3 rounded-xl border border-[#e5e5e5] p-4">
       <FacilityPhotoGallery photoUrls={facility.photoUrls} />
       {facility.isUnverifiedImport ? (
-        <View style={styles.unverifiedBadge}>
-          <Text style={styles.unverifiedBadgeText}>OpenStreetMap由来・未確認</Text>
+        <View className="mb-2 self-start rounded-full bg-[#fdf0d5] px-2.5 py-[3px]">
+          <Text className="text-[11px] font-bold text-[#a15c07]">OpenStreetMap由来・未確認</Text>
         </View>
       ) : null}
-      <Text style={styles.name}>{facility.name}</Text>
-      {facility.address ? <Text style={styles.address}>{facility.address}</Text> : null}
-      <View style={styles.badgeRow}>
+      <Text className="mb-1 text-[16px] font-bold text-[#1a1a1a]">{facility.name}</Text>
+      {facility.address ? (
+        <Text className="mb-2.5 text-[13px] text-[#5a5a5a]">{facility.address}</Text>
+      ) : null}
+      <View className="flex-row flex-wrap gap-2">
         <FeatureBadge label="車椅子対応" active={facility.isWheelchairAccessible} />
         <FeatureBadge label="多目的トイレ" active={facility.hasAccessibleToilet} />
         <FeatureBadge label="エレベーター" active={facility.hasElevator} />
       </View>
-      <Pressable onPress={openInGoogleMaps} style={styles.mapLink}>
-        <Text style={styles.mapLinkText}>Googleマップで開く</Text>
+      <Pressable onPress={() => onViewOnMap(facility)} className="mt-3 self-start">
+        <Text className="text-[13px] font-semibold text-blue-600">地図で見る</Text>
       </Pressable>
       <ConfirmationButtons
         spotId={facility.id}
@@ -52,79 +50,10 @@ interface FeatureBadgeProps {
 
 function FeatureBadge({ label, active }: FeatureBadgeProps) {
   return (
-    <View style={[styles.badge, active ? styles.badgeActive : styles.badgeInactive]}>
-      <Text style={[styles.badgeText, active ? styles.badgeTextActive : styles.badgeTextInactive]}>
+    <View className={`rounded-full px-2.5 py-1 ${active ? 'bg-[#e7f6ec]' : 'bg-[#f2f2f2]'}`}>
+      <Text className={`text-[12px] font-semibold ${active ? 'text-[#1a7f37]' : 'text-[#9a9a9a]'}`}>
         {active ? `✓ ${label}` : label}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-  },
-  unverifiedBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#fdf0d5',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    marginBottom: 8,
-  },
-  unverifiedBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#a15c07',
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  address: {
-    fontSize: 13,
-    color: '#5a5a5a',
-    marginBottom: 10,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  badge: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  badgeActive: {
-    backgroundColor: '#e7f6ec',
-  },
-  badgeInactive: {
-    backgroundColor: '#f2f2f2',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  badgeTextActive: {
-    color: '#1a7f37',
-  },
-  badgeTextInactive: {
-    color: '#9a9a9a',
-  },
-  mapLink: {
-    marginTop: 12,
-    alignSelf: 'flex-start',
-  },
-  mapLinkText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#2563eb',
-  },
-});
