@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 
-interface ConfirmSpotInput {
+export interface PendingConfirmation {
   spotId: string;
-  userId: string;
   isAccurate: boolean;
-  comment?: string;
+  comment: string;
+}
+
+interface ConfirmSpotInput extends PendingConfirmation {
+  userId: string;
 }
 
 async function confirmSpot(input: ConfirmSpotInput): Promise<void> {

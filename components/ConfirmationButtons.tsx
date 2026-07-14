@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { useConfirmSpot } from '../hooks/useConfirmSpot';
+import { useConfirmSpot, type PendingConfirmation } from '../hooks/useConfirmSpot';
 import type { MyConfirmation } from '../hooks/useMyConfirmations';
 
 interface ConfirmationButtonsProps {
@@ -9,7 +9,7 @@ interface ConfirmationButtonsProps {
   confirmedCount: number;
   disputedCount: number;
   myConfirmation?: MyConfirmation;
-  onRequireLogin: () => void;
+  onRequireLogin: (pending: PendingConfirmation) => void;
 }
 
 export function ConfirmationButtons({
@@ -23,13 +23,18 @@ export function ConfirmationButtons({
   const [comment, setComment] = useState(myConfirmation?.comment ?? '');
   const { mutate, isPending } = useConfirmSpot();
 
+  const hasUnsavedComment = comment.trim() !== '' && comment.trim() !== (myConfirmation?.comment ?? '');
+
   const handleVote = (isAccurate: boolean) => {
     if (!userId) {
-      onRequireLogin();
+      onRequireLogin({ spotId, isAccurate, comment: comment.trim() });
       return;
     }
 
-    mutate({ spotId, userId, isAccurate, comment: comment.trim() });
+    mutate(
+      { spotId, userId, isAccurate, comment: comment.trim() },
+      { onSuccess: () => setComment('') }
+    );
   };
 
   return (
@@ -62,6 +67,11 @@ export function ConfirmationButtons({
         onChangeText={setComment}
         editable={!isPending}
       />
+      {hasUnsavedComment ? (
+        <Text className="mt-1.5 text-[11px] text-[#a15c07]">
+          👍か👎を押すと、このコメントが送信されます
+        </Text>
+      ) : null}
     </View>
   );
 }

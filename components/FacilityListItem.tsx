@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
+import type { PendingConfirmation } from '../hooks/useConfirmSpot';
 import type { MyConfirmation } from '../hooks/useMyConfirmations';
 import type { SpotComment } from '../hooks/usePublicComments';
 import type { FacilityListItem as FacilityListItemData } from '../lib/facilityDisplay';
@@ -12,7 +13,7 @@ interface FacilityListItemProps {
   myConfirmation?: MyConfirmation;
   comments: SpotComment[];
   onViewOnMap: (facility: FacilityListItemData) => void;
-  onRequireLogin: () => void;
+  onRequireLogin: (pending: PendingConfirmation) => void;
 }
 
 export function FacilityListItem({

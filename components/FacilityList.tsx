@@ -1,4 +1,5 @@
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
+import type { PendingConfirmation } from '../hooks/useConfirmSpot';
 import { useFacilities } from '../hooks/useFacilities';
 import { useMyConfirmations } from '../hooks/useMyConfirmations';
 import { usePublicComments } from '../hooks/usePublicComments';
@@ -9,7 +10,7 @@ import { OsmAttribution } from './OsmAttribution';
 interface FacilityListProps {
   userId: string | null;
   onViewOnMap: (facility: FacilityListItemData) => void;
-  onRequireLogin: () => void;
+  onRequireLogin: (pending: PendingConfirmation) => void;
 }
 
 export function FacilityList({ userId, onViewOnMap, onRequireLogin }: FacilityListProps) {

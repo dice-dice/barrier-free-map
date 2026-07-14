@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { FacilityList } from '../components/FacilityList';
 import { LinkButton } from '../components/LinkButton';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { useConfirmSpot, type PendingConfirmation } from '../hooks/useConfirmSpot';
 import { useSignOut } from '../hooks/useSignOut';
 import type { FacilityListItem } from '../lib/facilityDisplay';
 import { AuthScreen } from './AuthScreen';
@@ -18,6 +19,7 @@ interface MainScreenProps {
 
 export function MainScreen({ session }: MainScreenProps) {
   const { signOut, loading, errorMessage } = useSignOut();
+  const { mutate: confirmSpot } = useConfirmSpot();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [isCreating, setIsCreating] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
@@ -25,12 +27,20 @@ export function MainScreen({ session }: MainScreenProps) {
   const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
     null
   );
+  const [pendingConfirmation, setPendingConfirmation] = useState<PendingConfirmation | null>(null);
 
   useEffect(() => {
     if (session) {
       setIsAuthPromptOpen(false);
     }
   }, [session]);
+
+  useEffect(() => {
+    if (session && pendingConfirmation) {
+      confirmSpot({ ...pendingConfirmation, userId: session.user.id });
+      setPendingConfirmation(null);
+    }
+  }, [session, pendingConfirmation, confirmSpot]);
 
   if (isAuthPromptOpen) {
     return (
@@ -56,7 +66,10 @@ export function MainScreen({ session }: MainScreenProps) {
     );
   }
 
-  const requireLogin = () => {
+  const requireLogin = (pending?: PendingConfirmation) => {
+    if (pending) {
+      setPendingConfirmation(pending);
+    }
     setIsAuthPromptOpen(true);
   };
 
@@ -105,7 +118,7 @@ export function MainScreen({ session }: MainScreenProps) {
           {session ? (
             <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
           ) : (
-            <PrimaryButton label="ログイン" onPress={requireLogin} />
+            <PrimaryButton label="ログイン" onPress={() => requireLogin()} />
           )}
         </View>
         <View className="mt-4 flex-row gap-2">
