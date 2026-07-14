@@ -5,10 +5,14 @@ import { FacilityList } from '../components/FacilityList';
 import { LinkButton } from '../components/LinkButton';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useConfirmSpot, type PendingConfirmation } from '../hooks/useConfirmSpot';
+import { useIsAdmin } from '../hooks/useIsAdmin';
+import { usePendingSpots } from '../hooks/usePendingSpots';
 import { useSignOut } from '../hooks/useSignOut';
 import type { FacilityListItem } from '../lib/facilityDisplay';
+import { AdminReviewScreen } from './AdminReviewScreen';
 import { AuthScreen } from './AuthScreen';
 import { CreateFacilityScreen } from './CreateFacilityScreen';
+import { MySubmissionsScreen } from './MySubmissionsScreen';
 import { NearbyMapScreen } from './NearbyMapScreen';
 
 type ViewMode = 'list' | 'map';
@@ -20,9 +24,13 @@ interface MainScreenProps {
 export function MainScreen({ session }: MainScreenProps) {
   const { signOut, loading, errorMessage } = useSignOut();
   const { mutate: confirmSpot } = useConfirmSpot();
+  const isAdmin = useIsAdmin(session?.user.id ?? null);
+  const { pendingSpots } = usePendingSpots(isAdmin);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [isCreating, setIsCreating] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
+  const [isReviewingPending, setIsReviewingPending] = useState(false);
+  const [isViewingMySubmissions, setIsViewingMySubmissions] = useState(false);
   const [focusedFacility, setFocusedFacility] = useState<FacilityListItem | null>(null);
   const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
     null
@@ -64,6 +72,14 @@ export function MainScreen({ session }: MainScreenProps) {
         initialLocation={pendingLocation}
       />
     );
+  }
+
+  if (isReviewingPending && isAdmin) {
+    return <AdminReviewScreen onDone={() => setIsReviewingPending(false)} />;
+  }
+
+  if (isViewingMySubmissions && session) {
+    return <MySubmissionsScreen userId={session.user.id} onDone={() => setIsViewingMySubmissions(false)} />;
   }
 
   const requireLogin = (pending?: PendingConfirmation) => {
@@ -113,13 +129,22 @@ export function MainScreen({ session }: MainScreenProps) {
           <Text className="mb-3 text-[14px] text-[#5a5a5a]">ゲストとして閲覧中</Text>
         )}
         {errorMessage ? <Text className="mb-3 text-[14px] text-[#d92d20]">{errorMessage}</Text> : null}
-        <View className="flex-row gap-2">
+        <View className="flex-row flex-wrap gap-2">
           <PrimaryButton label="施設を登録" onPress={handlePressRegister} />
           {session ? (
-            <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
+            <>
+              <PrimaryButton label="マイ投稿" onPress={() => setIsViewingMySubmissions(true)} />
+              <PrimaryButton label="ログアウト" onPress={() => signOut()} loading={loading} />
+            </>
           ) : (
             <PrimaryButton label="ログイン" onPress={() => requireLogin()} />
           )}
+          {isAdmin ? (
+            <PrimaryButton
+              label={`承認待ち (${pendingSpots.length})`}
+              onPress={() => setIsReviewingPending(true)}
+            />
+          ) : null}
         </View>
         <View className="mt-4 flex-row gap-2">
           <ViewModeTab label="一覧" active={viewMode === 'list'} onPress={() => handleSelectTab('list')} />

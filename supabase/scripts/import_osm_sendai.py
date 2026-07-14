@@ -134,6 +134,8 @@ def main():
                 "address": build_address(tags),
                 "latitude": lat,
                 "longitude": lon,
+                "osm_type": el["type"],
+                "osm_id": el["id"],
             }
         )
 
@@ -150,7 +152,10 @@ def main():
             f.write("-- (対象データなし)\n")
         else:
             f.write("insert into public.spots\n")
-            f.write("  (name, category, accessibility_features, location, address, status, source, created_by)\n")
+            f.write(
+                "  (name, category, accessibility_features, location, address, status, source, "
+                "osm_type, osm_id, created_by)\n"
+            )
             f.write("values\n")
 
             value_lines = []
@@ -165,11 +170,14 @@ def main():
                     f"{sql_string_or_null(row['address'])}, "
                     "'approved', "
                     "'openstreetmap', "
+                    f"'{row['osm_type']}', "
+                    f"{row['osm_id']}, "
                     f"'{CREATED_BY}'"
                     ")"
                 )
             f.write(",\n".join(value_lines))
-            f.write(";\n")
+            f.write("\non conflict (osm_type, osm_id) where osm_type is not null and osm_id is not null\n")
+            f.write("do nothing;\n")
 
     print(f"SQLファイルを書き出しました: {OUTPUT_PATH}")
 

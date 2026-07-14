@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useCreateFacility } from '../hooks/useCreateFacility';
+import { useNearbySpots } from '../hooks/useNearbySpots';
 import type { SpotCategory } from '../lib/database.types';
 import { ACCESSIBILITY_FEATURE_OPTIONS, CATEGORY_OPTIONS } from '../lib/facilityOptions';
 import { isValidFacilityName } from '../lib/facilityValidation';
 import { AuthTextInput } from './AuthTextInput';
 import { PrimaryButton } from './PrimaryButton';
 import { SelectableChip } from './SelectableChip';
+
+const DUPLICATE_CHECK_RADIUS_METERS = 20;
 
 interface FacilityFormProps {
   createdBy: string;
@@ -32,6 +35,8 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
 
   const coordinates = initialLocation ?? currentCoordinates;
   const isUsingSelectedLocation = initialLocation != null;
+
+  const { spots: nearbyExistingSpots } = useNearbySpots(coordinates, DUPLICATE_CHECK_RADIUS_METERS);
 
   const toggleFeature = (tag: string) => {
     setAccessibilityFeatures((current) =>
@@ -143,6 +148,19 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
           {coordinates.longitude.toFixed(5)}）
         </Text>
       )}
+
+      {nearbyExistingSpots.length > 0 ? (
+        <View className="mb-5 rounded-lg bg-[#fff8e5] p-3">
+          <Text className="mb-1 text-[13px] font-semibold text-[#8a6d00]">
+            近くに登録済みの施設があります
+          </Text>
+          {nearbyExistingSpots.map((spot) => (
+            <Text key={spot.id} className="text-[13px] text-[#8a6d00]">
+              ・{spot.name}（約{Math.round(spot.distanceMeters)}m）
+            </Text>
+          ))}
+        </View>
+      ) : null}
 
       {error ? <Text className="mb-5 text-[13px] text-[#d92d20]">{error.message}</Text> : null}
 

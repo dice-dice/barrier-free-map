@@ -18,18 +18,21 @@ export interface Database {
           id: string;
           display_name: string;
           avatar_url: string | null;
+          is_admin: boolean;
           created_at: string;
         };
         Insert: {
           id: string;
           display_name: string;
           avatar_url?: string | null;
+          is_admin?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
           display_name?: string;
           avatar_url?: string | null;
+          is_admin?: boolean;
           created_at?: string;
         };
         Relationships: [];
@@ -46,6 +49,8 @@ export interface Database {
           photo_urls: string[];
           status: SpotStatus;
           source: SpotSource;
+          osm_type: string | null;
+          osm_id: number | null;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -61,6 +66,8 @@ export interface Database {
           photo_urls?: string[];
           status?: SpotStatus;
           source?: SpotSource;
+          osm_type?: string | null;
+          osm_id?: number | null;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -76,6 +83,8 @@ export interface Database {
           photo_urls?: string[];
           status?: SpotStatus;
           source?: SpotSource;
+          osm_type?: string | null;
+          osm_id?: number | null;
           created_by?: string;
           created_at?: string;
           updated_at?: string;
@@ -160,6 +169,18 @@ export interface Database {
           created_at: string;
           updated_at: string;
           distance_meters: number;
+        }[];
+      };
+      get_pending_spots: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          name: string;
+          address: string | null;
+          category: SpotCategory;
+          latitude: number;
+          longitude: number;
+          created_at: string;
         }[];
       };
     };
