@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Linking, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import MapView, { LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { useAddressSearch, type AddressSearchResult } from '../hooks/useAddressSearch';
 import { useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useNearbySpots } from '../hooks/useNearbySpots';
 import type { FacilityListItem } from '../lib/facilityDisplay';
+import { PrimaryButton } from '../components/PrimaryButton';
 
 interface NearbyMapScreenProps {
   focusedFacility?: FacilityListItem | null;
@@ -16,6 +18,7 @@ function openDirections(latitude: number, longitude: number) {
 }
 
 const NEAR_EXISTING_SPOT_THRESHOLD_DEGREES = 0.0003; // おおよそ30m相当
+const ADDRESS_SEARCH_REGION_DELTA = 0.01;
 
 function isNearExistingSpot(
   location: { latitude: number; longitude: number },
@@ -34,6 +37,16 @@ export function NearbyMapScreen({ focusedFacility, onSelectLocation }: NearbyMap
   const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
     null
   );
+  const [isAddressSearchOpen, setIsAddressSearchOpen] = useState(false);
+  const [addressQuery, setAddressQuery] = useState('');
+  const {
+    search: searchAddress,
+    results: addressResults,
+    loading: addressSearchLoading,
+    errorMessage: addressSearchError,
+    reset: resetAddressSearch,
+  } = useAddressSearch();
+  const mapRef = useRef<MapView>(null);
 
   if (locationLoading) {
     return (
@@ -78,9 +91,32 @@ export function NearbyMapScreen({ focusedFacility, onSelectLocation }: NearbyMap
     }
   };
 
+  const handleSearchAddress = () => {
+    if (addressQuery.trim() === '') {
+      return;
+    }
+    searchAddress(addressQuery.trim());
+  };
+
+  const handleSelectAddressResult = (result: AddressSearchResult) => {
+    mapRef.current?.animateToRegion(
+      {
+        latitude: result.latitude,
+        longitude: result.longitude,
+        latitudeDelta: ADDRESS_SEARCH_REGION_DELTA,
+        longitudeDelta: ADDRESS_SEARCH_REGION_DELTA,
+      },
+      500
+    );
+    setIsAddressSearchOpen(false);
+    setAddressQuery('');
+    resetAddressSearch();
+  };
+
   return (
     <View className="flex-1">
       <MapView
+        ref={mapRef}
         style={{ flex: 1 }}
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
         showsUserLocation
@@ -112,23 +148,61 @@ export function NearbyMapScreen({ focusedFacility, onSelectLocation }: NearbyMap
           />
         ) : null}
       </MapView>
+      <View className="absolute left-4 right-4 top-4">
+        {isAddressSearchOpen ? (
+          <View className="rounded-lg bg-white p-3">
+            <View className="flex-row gap-2">
+              <TextInput
+                value={addressQuery}
+                onChangeText={setAddressQuery}
+                placeholder="住所で地図を移動（例: 仙台市青葉区中央一丁目）"
+                className="flex-1 rounded-lg border border-[#e5e5e5] px-3 py-2 text-[14px] text-[#1a1a1a]"
+              />
+              <PrimaryButton label="検索" onPress={handleSearchAddress} loading={addressSearchLoading} />
+            </View>
+            {addressSearchError ? (
+              <Text className="mt-2 text-[13px] text-[#d92d20]">{addressSearchError}</Text>
+            ) : null}
+            {addressResults.length > 0 ? (
+              <View className="mt-2 rounded-lg border border-[#e5e5e5]">
+                {addressResults.map((result, index) => (
+                  <Pressable
+                    key={`${result.latitude}-${result.longitude}-${index}`}
+                    onPress={() => handleSelectAddressResult(result)}
+                    className={`px-3 py-2.5 ${index > 0 ? 'border-t border-[#e5e5e5]' : ''}`}
+                  >
+                    <Text className="text-[14px] text-[#1a1a1a]">{result.title}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+            <Pressable onPress={() => setIsAddressSearchOpen(false)} className="mt-2 items-center">
+              <Text className="text-[13px] text-[#5a5a5a]">閉じる</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable onPress={() => setIsAddressSearchOpen(true)} className="self-start rounded-full bg-white p-2.5">
+            <Text className="text-[13px] font-semibold text-[#1a1a1a]">住所で地図を移動</Text>
+          </Pressable>
+        )}
+        {onSelectLocation ? (
+          <View className="mt-2 rounded-lg bg-white/90 p-2">
+            <Text className="text-center text-[12px] text-[#5a5a5a]">
+              {pendingLocation
+                ? '緑のピンをタップすると登録画面が開きます'
+                : '地図を長押しすると、その場所を施設として登録できます'}
+            </Text>
+          </View>
+        ) : null}
+      </View>
       {spotsLoading ? (
-        <View className="absolute top-4 self-center rounded-full bg-white p-2">
+        <View className="absolute bottom-4 self-center rounded-full bg-white p-2">
           <ActivityIndicator />
         </View>
       ) : null}
       {spotsError ? (
         <View className="absolute bottom-4 left-4 right-4 rounded-lg bg-white p-3">
           <Text className="text-center text-[13px] text-[#d92d20]">{spotsError}</Text>
-        </View>
-      ) : null}
-      {onSelectLocation ? (
-        <View className="absolute top-4 left-4 right-4 rounded-lg bg-white/90 p-2">
-          <Text className="text-center text-[12px] text-[#5a5a5a]">
-            {pendingLocation
-              ? '緑のピンをタップすると登録画面が開きます'
-              : '地図を長押しすると、その場所を施設として登録できます'}
-          </Text>
         </View>
       ) : null}
       <Text className="absolute bottom-1 right-2 bg-white/70 px-1 text-[10px] text-[#5a5a5a]">

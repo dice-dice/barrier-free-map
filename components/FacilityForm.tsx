@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Alert, Text, View } from 'react-native';
-import { useCurrentLocation } from '../hooks/useCurrentLocation';
 import { useCreateFacility } from '../hooks/useCreateFacility';
 import { useNearbySpots } from '../hooks/useNearbySpots';
 import type { SpotCategory } from '../lib/database.types';
@@ -15,10 +14,10 @@ const DUPLICATE_CHECK_RADIUS_METERS = 20;
 interface FacilityFormProps {
   createdBy: string;
   onSuccess: () => void;
-  initialLocation?: { latitude: number; longitude: number } | null;
+  location: { latitude: number; longitude: number };
 }
 
-export function FacilityForm({ createdBy, onSuccess, initialLocation }: FacilityFormProps) {
+export function FacilityForm({ createdBy, onSuccess, location }: FacilityFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
@@ -26,17 +25,8 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
   const [accessibilityFeatures, setAccessibilityFeatures] = useState<string[]>([]);
   const [nameError, setNameError] = useState<string | undefined>();
 
-  const {
-    coordinates: currentCoordinates,
-    loading: locationLoading,
-    errorMessage: locationError,
-  } = useCurrentLocation();
   const { mutate, isPending, error } = useCreateFacility();
-
-  const coordinates = initialLocation ?? currentCoordinates;
-  const isUsingSelectedLocation = initialLocation != null;
-
-  const { spots: nearbyExistingSpots } = useNearbySpots(coordinates, DUPLICATE_CHECK_RADIUS_METERS);
+  const { spots: nearbyExistingSpots } = useNearbySpots(location, DUPLICATE_CHECK_RADIUS_METERS);
 
   const toggleFeature = (tag: string) => {
     setAccessibilityFeatures((current) =>
@@ -51,10 +41,6 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
     }
     setNameError(undefined);
 
-    if (!coordinates) {
-      return;
-    }
-
     mutate(
       {
         name: name.trim(),
@@ -62,8 +48,8 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
         category,
         accessibilityFeatures,
         address: address.trim(),
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
+        latitude: location.latitude,
+        longitude: location.longitude,
         createdBy,
       },
       {
@@ -75,10 +61,6 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
       }
     );
   };
-
-  const canSubmit = isUsingSelectedLocation
-    ? coordinates !== null && !isPending
-    : !locationLoading && coordinates !== null && !isPending;
 
   return (
     <View className="w-full">
@@ -131,23 +113,10 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
       </View>
 
       <Text className="mb-2 text-[14px] font-semibold text-[#1a1a1a]">位置情報</Text>
-      {isUsingSelectedLocation ? (
-        <Text className="mb-5 text-[13px] text-[#5a5a5a]">
-          地図で選択した地点を施設の位置として登録します（緯度 {coordinates!.latitude.toFixed(5)} / 経度{' '}
-          {coordinates!.longitude.toFixed(5)}）
-        </Text>
-      ) : locationLoading ? (
-        <Text className="mb-5 text-[13px] text-[#5a5a5a]">現在地を取得中です...</Text>
-      ) : locationError || !coordinates ? (
-        <Text className="mb-5 text-[13px] text-[#d92d20]">
-          {locationError ?? '現在地を取得できませんでした'}
-        </Text>
-      ) : (
-        <Text className="mb-5 text-[13px] text-[#5a5a5a]">
-          現在地を施設の位置として登録します（緯度 {coordinates.latitude.toFixed(5)} / 経度{' '}
-          {coordinates.longitude.toFixed(5)}）
-        </Text>
-      )}
+      <Text className="mb-5 text-[13px] text-[#5a5a5a]">
+        地図で選択した地点を施設の位置として登録します（緯度 {location.latitude.toFixed(5)} / 経度{' '}
+        {location.longitude.toFixed(5)}）
+      </Text>
 
       {nearbyExistingSpots.length > 0 ? (
         <View className="mb-5 rounded-lg bg-[#fff8e5] p-3">
@@ -164,7 +133,7 @@ export function FacilityForm({ createdBy, onSuccess, initialLocation }: Facility
 
       {error ? <Text className="mb-5 text-[13px] text-[#d92d20]">{error.message}</Text> : null}
 
-      <PrimaryButton label="登録する" onPress={handleSubmit} loading={isPending} disabled={!canSubmit} />
+      <PrimaryButton label="登録する" onPress={handleSubmit} loading={isPending} disabled={isPending} />
     </View>
   );
 }

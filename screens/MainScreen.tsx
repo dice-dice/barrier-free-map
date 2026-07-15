@@ -61,7 +61,7 @@ export function MainScreen({ session }: MainScreenProps) {
     );
   }
 
-  if (isCreating && session) {
+  if (isCreating && session && pendingLocation) {
     return (
       <CreateFacilityScreen
         createdBy={session.user.id}
@@ -69,7 +69,7 @@ export function MainScreen({ session }: MainScreenProps) {
           setIsCreating(false);
           setPendingLocation(null);
         }}
-        initialLocation={pendingLocation}
+        location={pendingLocation}
       />
     );
   }
@@ -110,15 +110,6 @@ export function MainScreen({ session }: MainScreenProps) {
     setIsCreating(true);
   };
 
-  const handlePressRegister = () => {
-    if (!session) {
-      requireLogin();
-      return;
-    }
-    setPendingLocation(null);
-    setIsCreating(true);
-  };
-
   return (
     <View className="flex-1 bg-white">
       <View className="px-6 pb-4 pt-6">
@@ -130,7 +121,6 @@ export function MainScreen({ session }: MainScreenProps) {
         )}
         {errorMessage ? <Text className="mb-3 text-[14px] text-[#d92d20]">{errorMessage}</Text> : null}
         <View className="flex-row flex-wrap gap-2">
-          <PrimaryButton label="施設を登録" onPress={handlePressRegister} />
           {session ? (
             <>
               <PrimaryButton label="マイ投稿" onPress={() => setIsViewingMySubmissions(true)} />
