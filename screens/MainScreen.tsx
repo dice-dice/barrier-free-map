@@ -144,6 +144,7 @@ export function MainScreen({ session }: MainScreenProps) {
       {viewMode === 'list' ? (
         <FacilityList
           userId={session?.user.id ?? null}
+          isAdmin={isAdmin}
           onViewOnMap={handleViewOnMap}
           onRequireLogin={requireLogin}
         />

@@ -1,5 +1,6 @@
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import type { PendingConfirmation } from '../hooks/useConfirmSpot';
+import { useDeleteConfirmation } from '../hooks/useDeleteConfirmation';
 import { useFacilities } from '../hooks/useFacilities';
 import { useMyConfirmations } from '../hooks/useMyConfirmations';
 import { usePublicComments } from '../hooks/usePublicComments';
@@ -9,14 +10,16 @@ import { OsmAttribution } from './OsmAttribution';
 
 interface FacilityListProps {
   userId: string | null;
+  isAdmin: boolean;
   onViewOnMap: (facility: FacilityListItemData) => void;
   onRequireLogin: (pending: PendingConfirmation) => void;
 }
 
-export function FacilityList({ userId, onViewOnMap, onRequireLogin }: FacilityListProps) {
+export function FacilityList({ userId, isAdmin, onViewOnMap, onRequireLogin }: FacilityListProps) {
   const { facilities, loading, errorMessage } = useFacilities();
   const myConfirmations = useMyConfirmations(userId);
   const publicComments = usePublicComments();
+  const { mutate: deleteComment } = useDeleteConfirmation();
 
   if (loading) {
     return (
@@ -52,8 +55,10 @@ export function FacilityList({ userId, onViewOnMap, onRequireLogin }: FacilityLi
           userId={userId}
           myConfirmation={myConfirmations[item.id]}
           comments={publicComments[item.id] ?? []}
+          isAdmin={isAdmin}
           onViewOnMap={onViewOnMap}
           onRequireLogin={onRequireLogin}
+          onDeleteComment={(commentId) => deleteComment(commentId)}
         />
       )}
       contentContainerClassName="px-6 pb-6"

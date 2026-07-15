@@ -12,8 +12,10 @@ interface FacilityListItemProps {
   userId: string | null;
   myConfirmation?: MyConfirmation;
   comments: SpotComment[];
+  isAdmin: boolean;
   onViewOnMap: (facility: FacilityListItemData) => void;
   onRequireLogin: (pending: PendingConfirmation) => void;
+  onDeleteComment: (commentId: string) => void;
 }
 
 export function FacilityListItem({
@@ -21,8 +23,10 @@ export function FacilityListItem({
   userId,
   myConfirmation,
   comments,
+  isAdmin,
   onViewOnMap,
   onRequireLogin,
+  onDeleteComment,
 }: FacilityListItemProps) {
   return (
     <View className="mb-3 rounded-xl border border-[#e5e5e5] p-4">
@@ -52,7 +56,7 @@ export function FacilityListItem({
         myConfirmation={myConfirmation}
         onRequireLogin={onRequireLogin}
       />
-      <SpotComments comments={comments} />
+      <SpotComments comments={comments} isAdmin={isAdmin} onDeleteComment={onDeleteComment} />
     </View>
   );
 }

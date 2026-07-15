@@ -21,7 +21,7 @@ export function ConfirmationButtons({
   onRequireLogin,
 }: ConfirmationButtonsProps) {
   const [comment, setComment] = useState('');
-  const { mutate, isPending } = useConfirmSpot();
+  const { mutate, isPending, error } = useConfirmSpot();
 
   const hasUnsavedComment = comment.trim() !== '';
 
@@ -72,6 +72,7 @@ export function ConfirmationButtons({
           👍か👎を押すと、このコメントが送信されます
         </Text>
       ) : null}
+      {error ? <Text className="mt-1.5 text-[11px] text-[#d92d20]">{error.message}</Text> : null}
     </View>
   );
 }

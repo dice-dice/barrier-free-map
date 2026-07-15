@@ -1,13 +1,15 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { SpotComment } from '../hooks/usePublicComments';
 
 interface SpotCommentsProps {
   comments: SpotComment[];
+  isAdmin?: boolean;
+  onDeleteComment?: (commentId: string) => void;
 }
 
 const VISIBLE_COMMENT_COUNT = 3;
 
-export function SpotComments({ comments }: SpotCommentsProps) {
+export function SpotComments({ comments, isAdmin, onDeleteComment }: SpotCommentsProps) {
   if (comments.length === 0) {
     return null;
   }
@@ -18,11 +20,19 @@ export function SpotComments({ comments }: SpotCommentsProps) {
   return (
     <View className="mt-3 gap-2">
       <Text className="text-[12px] font-semibold text-[#5a5a5a]">みんなのコメント</Text>
-      {visibleComments.map((item, index) => (
-        <View key={index} className="rounded-lg bg-[#f7f7f7] px-3 py-2">
-          <Text className="text-[13px] text-[#1a1a1a]">
+      {visibleComments.map((item) => (
+        <View
+          key={item.id}
+          className="flex-row items-center justify-between rounded-lg bg-[#f7f7f7] px-3 py-2"
+        >
+          <Text className="flex-1 text-[13px] text-[#1a1a1a]">
             {item.isAccurate ? '👍' : '👎'} {item.comment}
           </Text>
+          {isAdmin ? (
+            <Pressable onPress={() => onDeleteComment?.(item.id)} className="ml-2 px-1">
+              <Text className="text-[12px] text-[#d92d20]">削除</Text>
+            </Pressable>
+          ) : null}
         </View>
       ))}
       {remainingCount > 0 ? (
