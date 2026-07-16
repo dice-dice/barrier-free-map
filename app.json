@@ -16,7 +16,7 @@
     "android": {
       "package": "com.dicedice.barrierfreemap",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#E7F6EC",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -42,7 +42,21 @@
           "locationWhenInUsePermission": "現在地から近くのバリアフリー施設を検索するために使用します"
         }
       ],
-      "@sentry/react-native"
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "dice-dice",
+          "project": "react-native-1"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/android-icon-foreground.png",
+          "imageWidth": 160,
+          "backgroundColor": "#E7F6EC"
+        }
+      ]
     ],
     "extra": {
       "eas": {
