@@ -41,7 +41,8 @@
         {
           "locationWhenInUsePermission": "現在地から近くのバリアフリー施設を検索するために使用します"
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "extra": {
       "eas": {

@@ -1,0 +1,5 @@
+appId: com.dicedice.barrierfreemap
+---
+- launchApp
+- tapOn: "地図"
+- assertVisible: "住所で地図を移動"

@@ -1,0 +1,14 @@
+appId: com.dicedice.barrierfreemap
+---
+# Requires MAESTRO_EMAIL / MAESTRO_PASSWORD, e.g.:
+#   maestro test .maestro/login_logout.yaml -e MAESTRO_EMAIL=you@example.com -e MAESTRO_PASSWORD=yourpassword
+- launchApp
+- tapOn: "ログイン"
+- tapOn: "you@example.com"
+- inputText: ${MAESTRO_EMAIL}
+- tapOn: "8文字以上"
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: "ログイン"
+- assertVisible: ${MAESTRO_EMAIL}
+- tapOn: "ログアウト"
+- assertVisible: "ゲストとして閲覧中"

@@ -1,0 +1,7 @@
+appId: com.dicedice.barrierfreemap
+---
+- launchApp
+- assertVisible: "施設一覧"
+- assertVisible: "ゲストとして閲覧中"
+- assertVisible: "一覧"
+- assertVisible: "地図"
