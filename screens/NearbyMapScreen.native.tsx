@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import MapView, { LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useAddressSearch, type AddressSearchResult } from '../hooks/useAddressSearch';
 import { useCurrentLocation } from '../hooks/useCurrentLocation';
@@ -19,6 +19,7 @@ function openDirections(latitude: number, longitude: number) {
 
 const NEAR_EXISTING_SPOT_THRESHOLD_DEGREES = 0.0003; // おおよそ30m相当
 const ADDRESS_SEARCH_REGION_DELTA = 0.01;
+const MAX_VISIBLE_ADDRESS_RESULTS = 20;
 
 function isNearExistingSpot(
   location: { latitude: number; longitude: number },
@@ -165,15 +166,22 @@ export function NearbyMapScreen({ focusedFacility, onSelectLocation }: NearbyMap
             ) : null}
             {addressResults.length > 0 ? (
               <View className="mt-2 rounded-lg border border-[#e5e5e5]">
-                {addressResults.map((result, index) => (
-                  <Pressable
-                    key={`${result.latitude}-${result.longitude}-${index}`}
-                    onPress={() => handleSelectAddressResult(result)}
-                    className={`px-3 py-2.5 ${index > 0 ? 'border-t border-[#e5e5e5]' : ''}`}
-                  >
-                    <Text className="text-[14px] text-[#1a1a1a]">{result.title}</Text>
-                  </Pressable>
-                ))}
+                <ScrollView className="max-h-[240px]" nestedScrollEnabled keyboardShouldPersistTaps="handled">
+                  {addressResults.slice(0, MAX_VISIBLE_ADDRESS_RESULTS).map((result, index) => (
+                    <Pressable
+                      key={`${result.latitude}-${result.longitude}-${index}`}
+                      onPress={() => handleSelectAddressResult(result)}
+                      className={`px-3 py-2.5 ${index > 0 ? 'border-t border-[#e5e5e5]' : ''}`}
+                    >
+                      <Text className="text-[14px] text-[#1a1a1a]">{result.title}</Text>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+                {addressResults.length > MAX_VISIBLE_ADDRESS_RESULTS ? (
+                  <Text className="border-t border-[#e5e5e5] px-3 py-2 text-[12px] text-[#9a9a9a]">
+                    他{addressResults.length - MAX_VISIBLE_ADDRESS_RESULTS}件あります。住所をより詳しく入力すると絞り込めます
+                  </Text>
+                ) : null}
               </View>
             ) : null}
             <Pressable onPress={() => setIsAddressSearchOpen(false)} className="mt-2 items-center">
