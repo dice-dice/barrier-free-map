@@ -46,7 +46,7 @@
         "@sentry/react-native/expo",
         {
           "organization": "dice-dice",
-          "project": "react-native-1"
+          "project": "react-native"
         }
       ],
       [
