@@ -4,9 +4,10 @@ import { LoginForm } from '../components/LoginForm';
 
 interface LoginScreenProps {
   onNavigateToSignup: () => void;
+  onShowTerms: () => void;
 }
 
-export function LoginScreen({ onNavigateToSignup }: LoginScreenProps) {
+export function LoginScreen({ onNavigateToSignup, onShowTerms }: LoginScreenProps) {
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerClassName="flex-grow justify-center px-6" keyboardShouldPersistTaps="handled">
@@ -16,6 +17,13 @@ export function LoginScreen({ onNavigateToSignup }: LoginScreenProps) {
         </View>
         <LoginForm />
         <LinkButton label="アカウントをお持ちでない方はこちら" onPress={onNavigateToSignup} />
+        <Text className="mt-6 text-center text-[12px] text-[#9a9a9a]">
+          ご利用いただくことで、
+          <Text className="text-[12px] font-semibold text-blue-600" onPress={onShowTerms}>
+            利用規約・免責事項
+          </Text>
+          に同意したものとみなします
+        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

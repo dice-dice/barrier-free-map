@@ -1,10 +1,12 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { DisclaimerNotice } from '../components/DisclaimerNotice';
 import { FacilityList } from '../components/FacilityList';
 import { LinkButton } from '../components/LinkButton';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useConfirmSpot, type PendingConfirmation } from '../hooks/useConfirmSpot';
+import { useDisclaimerNotice } from '../hooks/useDisclaimerNotice';
 import { useIsAdmin } from '../hooks/useIsAdmin';
 import { usePendingSpots } from '../hooks/usePendingSpots';
 import { useSignOut } from '../hooks/useSignOut';
@@ -14,6 +16,7 @@ import { AuthScreen } from './AuthScreen';
 import { CreateFacilityScreen } from './CreateFacilityScreen';
 import { MySubmissionsScreen } from './MySubmissionsScreen';
 import { NearbyMapScreen } from './NearbyMapScreen';
+import { TermsScreen } from './TermsScreen';
 
 type ViewMode = 'list' | 'map';
 
@@ -26,11 +29,13 @@ export function MainScreen({ session }: MainScreenProps) {
   const { mutate: confirmSpot } = useConfirmSpot();
   const isAdmin = useIsAdmin(session?.user.id ?? null);
   const { pendingSpots } = usePendingSpots(isAdmin);
+  const { isVisible: isDisclaimerVisible, dismiss: dismissDisclaimer } = useDisclaimerNotice();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [isCreating, setIsCreating] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
   const [isReviewingPending, setIsReviewingPending] = useState(false);
   const [isViewingMySubmissions, setIsViewingMySubmissions] = useState(false);
+  const [isViewingTerms, setIsViewingTerms] = useState(false);
   const [focusedFacility, setFocusedFacility] = useState<FacilityListItem | null>(null);
   const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
     null
@@ -80,6 +85,10 @@ export function MainScreen({ session }: MainScreenProps) {
 
   if (isViewingMySubmissions && session) {
     return <MySubmissionsScreen userId={session.user.id} onDone={() => setIsViewingMySubmissions(false)} />;
+  }
+
+  if (isViewingTerms) {
+    return <TermsScreen onDone={() => setIsViewingTerms(false)} />;
   }
 
   const requireLogin = (pending?: PendingConfirmation) => {
@@ -140,6 +149,12 @@ export function MainScreen({ session }: MainScreenProps) {
           <ViewModeTab label="一覧" active={viewMode === 'list'} onPress={() => handleSelectTab('list')} />
           <ViewModeTab label="地図" active={viewMode === 'map'} onPress={() => handleSelectTab('map')} />
         </View>
+        <Text
+          className="mt-3 text-[11px] text-[#9a9a9a]"
+          onPress={() => setIsViewingTerms(true)}
+        >
+          利用規約・免責事項
+        </Text>
       </View>
       {viewMode === 'list' ? (
         <FacilityList
@@ -151,6 +166,15 @@ export function MainScreen({ session }: MainScreenProps) {
       ) : (
         <NearbyMapScreen focusedFacility={focusedFacility} onSelectLocation={handleSelectLocation} />
       )}
+      {isDisclaimerVisible ? (
+        <DisclaimerNotice
+          onDismiss={dismissDisclaimer}
+          onShowTerms={() => {
+            dismissDisclaimer();
+            setIsViewingTerms(true);
+          }}
+        />
+      ) : null}
     </View>
   );
 }
