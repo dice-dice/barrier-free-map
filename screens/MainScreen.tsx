@@ -5,6 +5,7 @@ import { DisclaimerNotice } from '../components/DisclaimerNotice';
 import { FacilityList } from '../components/FacilityList';
 import { LinkButton } from '../components/LinkButton';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { SettingsMenu } from '../components/SettingsMenu';
 import { useConfirmSpot, type PendingConfirmation } from '../hooks/useConfirmSpot';
 import { useDisclaimerNotice } from '../hooks/useDisclaimerNotice';
 import { useIsAdmin } from '../hooks/useIsAdmin';
@@ -16,6 +17,7 @@ import { AuthScreen } from './AuthScreen';
 import { CreateFacilityScreen } from './CreateFacilityScreen';
 import { MySubmissionsScreen } from './MySubmissionsScreen';
 import { NearbyMapScreen } from './NearbyMapScreen';
+import { PrivacyPolicyScreen } from './PrivacyPolicyScreen';
 import { TermsScreen } from './TermsScreen';
 
 type ViewMode = 'list' | 'map';
@@ -36,6 +38,8 @@ export function MainScreen({ session }: MainScreenProps) {
   const [isReviewingPending, setIsReviewingPending] = useState(false);
   const [isViewingMySubmissions, setIsViewingMySubmissions] = useState(false);
   const [isViewingTerms, setIsViewingTerms] = useState(false);
+  const [isViewingPrivacyPolicy, setIsViewingPrivacyPolicy] = useState(false);
+  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [focusedFacility, setFocusedFacility] = useState<FacilityListItem | null>(null);
   const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
     null
@@ -91,6 +95,10 @@ export function MainScreen({ session }: MainScreenProps) {
     return <TermsScreen onDone={() => setIsViewingTerms(false)} />;
   }
 
+  if (isViewingPrivacyPolicy) {
+    return <PrivacyPolicyScreen onDone={() => setIsViewingPrivacyPolicy(false)} />;
+  }
+
   const requireLogin = (pending?: PendingConfirmation) => {
     if (pending) {
       setPendingConfirmation(pending);
@@ -122,7 +130,12 @@ export function MainScreen({ session }: MainScreenProps) {
   return (
     <View className="flex-1 bg-white">
       <View className="px-6 pb-4 pt-6">
-        <Text className="mb-1 text-[20px] font-semibold text-[#1a1a1a]">施設一覧</Text>
+        <View className="flex-row items-start justify-between">
+          <Text className="mb-1 text-[20px] font-semibold text-[#1a1a1a]">施設一覧</Text>
+          <Pressable onPress={() => setIsSettingsMenuOpen(true)}>
+            <Text className="text-[13px] font-semibold text-[#5a5a5a]">設定</Text>
+          </Pressable>
+        </View>
         {session ? (
           <Text className="mb-3 text-[14px] text-[#5a5a5a]">{session.user.email}</Text>
         ) : (
@@ -175,6 +188,18 @@ export function MainScreen({ session }: MainScreenProps) {
           }}
         />
       ) : null}
+      <SettingsMenu
+        visible={isSettingsMenuOpen}
+        onClose={() => setIsSettingsMenuOpen(false)}
+        onSelectPrivacyPolicy={() => {
+          setIsSettingsMenuOpen(false);
+          setIsViewingPrivacyPolicy(true);
+        }}
+        onSelectTerms={() => {
+          setIsSettingsMenuOpen(false);
+          setIsViewingTerms(true);
+        }}
+      />
     </View>
   );
 }
