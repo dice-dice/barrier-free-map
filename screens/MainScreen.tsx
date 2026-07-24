@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -18,6 +19,7 @@ import { CreateFacilityScreen } from './CreateFacilityScreen';
 import { MySubmissionsScreen } from './MySubmissionsScreen';
 import { NearbyMapScreen } from './NearbyMapScreen';
 import { PrivacyPolicyScreen } from './PrivacyPolicyScreen';
+import { ProfileScreen } from './ProfileScreen';
 import { TermsScreen } from './TermsScreen';
 
 type ViewMode = 'list' | 'map';
@@ -39,6 +41,7 @@ export function MainScreen({ session }: MainScreenProps) {
   const [isViewingMySubmissions, setIsViewingMySubmissions] = useState(false);
   const [isViewingTerms, setIsViewingTerms] = useState(false);
   const [isViewingPrivacyPolicy, setIsViewingPrivacyPolicy] = useState(false);
+  const [isViewingProfile, setIsViewingProfile] = useState(false);
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [focusedFacility, setFocusedFacility] = useState<FacilityListItem | null>(null);
   const [pendingLocation, setPendingLocation] = useState<{ latitude: number; longitude: number } | null>(
@@ -99,6 +102,10 @@ export function MainScreen({ session }: MainScreenProps) {
     return <PrivacyPolicyScreen onDone={() => setIsViewingPrivacyPolicy(false)} />;
   }
 
+  if (isViewingProfile && session) {
+    return <ProfileScreen userId={session.user.id} onDone={() => setIsViewingProfile(false)} />;
+  }
+
   const requireLogin = (pending?: PendingConfirmation) => {
     if (pending) {
       setPendingConfirmation(pending);
@@ -132,8 +139,12 @@ export function MainScreen({ session }: MainScreenProps) {
       <View className="px-6 pb-4 pt-6">
         <View className="flex-row items-start justify-between">
           <Text className="mb-1 text-[20px] font-semibold text-[#1a1a1a]">施設一覧</Text>
-          <Pressable onPress={() => setIsSettingsMenuOpen(true)}>
-            <Text className="text-[13px] font-semibold text-[#5a5a5a]">設定</Text>
+          <Pressable
+            onPress={() => setIsSettingsMenuOpen(true)}
+            hitSlop={12}
+            className="-m-2 mr-4 mt-1 p-2"
+          >
+            <Ionicons name="settings-outline" size={22} color="#5a5a5a" />
           </Pressable>
         </View>
         {session ? (
@@ -191,6 +202,11 @@ export function MainScreen({ session }: MainScreenProps) {
       <SettingsMenu
         visible={isSettingsMenuOpen}
         onClose={() => setIsSettingsMenuOpen(false)}
+        userEmail={session?.user.email ?? null}
+        onSelectProfile={() => {
+          setIsSettingsMenuOpen(false);
+          setIsViewingProfile(true);
+        }}
         onSelectPrivacyPolicy={() => {
           setIsSettingsMenuOpen(false);
           setIsViewingPrivacyPolicy(true);
